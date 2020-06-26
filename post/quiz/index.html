@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>quiz阅读笔记系列2 | JGL</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://jgl666.github.io/favicon.ico?v=1593153671458">
+<link rel="stylesheet" href="https://jgl666.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="原文链接
+问题
+struct S(i32);
+
+impl std::ops::BitAnd&lt;S&gt; for () {
+    type Output = ();
+
+    fn bitand(self, rhs: S) {
+   ..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jgl666.github.io">
+        <img src="https://jgl666.github.io/images/avatar.png?v=1593153671458" class="site-logo">
+        <h1 class="site-title">JGL</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      温故而知新
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://jgl666.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">quiz阅读笔记系列2</h2>
+            <div class="post-date">2020-06-26</div>
+            
+            <div class="post-content" v-pre>
+              <p><a href="https://dtolnay.github.io/rust-quiz/2">原文链接</a></p>
+<h2 id="问题br">问题<br></h2>
+<pre><code>struct S(i32);
+
+impl std::ops::BitAnd&lt;S&gt; for () {
+    type Output = ();
+
+    fn bitand(self, rhs: S) {
+        print!(&quot;{}&quot;, rhs.0);
+    }
+}
+
+fn main() {
+    let f = || ( () &amp; S(1) );
+    let g = || { () &amp; S(2) };
+    let h = || ( {} &amp; S(3) );
+    let i = || { {} &amp; S(4) };
+    f();
+    g();
+    h();
+    i();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>（）是分组表达式，结果是整个括号内部计算的结果，是一条表达式语句。<br><br>
+闭包返回的是一个分组表达式，计算结果为括号内部的计算结果。即调用bitand输出1</p>
+<pre><code> let f = || ( () &amp; S(1) );
+</code></pre>
+<br>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>块表达式语句中只有一条表达式语句，计算结果就是() &amp; S(2)结果，即调用bitand输出2</p>
+<pre><code> let g = || { () &amp; S(2) };
+</code></pre>
+<br>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>闭包返回一个<a href="https://doc.rust-lang.org/reference/expressions/grouped-expr.html">分组表达式</a>。</p>
+<pre><code>let h = || ( {} &amp; S(3) );
+</code></pre>
+<p>拿掉外面的()，计算如下表达式</p>
+<pre><code> {} &amp; S(3)
+</code></pre>
+<p>因为{}是一个块表达式，默认返回单元类型(),所以最终相当于计算</p>
+<pre><code>() &amp; S(3)
+</code></pre>
+<p>最后输出3</p>
+<br>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>闭包返回的是块表达式，块表达式是按顺序执行表达式中的语句。</p>
+<pre><code> let i = || { {} &amp; S(4) };
+</code></pre>
+<p>该块表达式一共有两条语句，一条是{}<a href="https://doc.rust-lang.org/reference/expressions/block-expr.html">块表达式语句</a>，另一条是<a href="https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions">位置表达式语句</a>。因为是块表达式的最后一句，作为块表达式的返回值，<mark>本来表达式作为语句需要加分号，现在不用加了</mark>。<br><br>
+所以执行流程如下</p>
+<pre><code>let i = || { 
+{};
+return &amp;S(4); };
+</code></pre>
+<p>最后返回&amp;S(4),什么输出也没有。</p>
+<br>
+<h2 id="rust相关知识点">Rust相关知识点</h2>
+<ul>
+<li><strong>关联类型</strong><br><br>
+关联类型是一个占位符，trait在方法签名的时候，暂时使用它来表示抽象的类型，<br>
+等到具体实现的时候指定具体的类型。<br></li>
+</ul>
+<p>   <strong>和泛型比较：</strong><br><br>
+   <strong>相同</strong>：关联类型和泛型一样都是延迟对trait使用具体类型的决定。<br><br>
+   <strong>不同</strong>：当一个trait有一个泛型参数时，它可以为一个类型实现多次，每次更改泛型类型参数的具体类型。关联类型只能实现一次。<br></p>
+<p>   <strong>泛型示例</strong></p>
+<pre><code>impl From&lt;(i32,i32)&gt; for Pointer{
+    fn from(val:(i32,i32))-&gt;Pointer{
+        Pointer{x:val.0, y:val.1}
+    }
+}
+
+
+impl From&lt;i32&gt; for Pointer{
+    fn from(val:i32)-&gt;Pointer{
+        Pointer{x:val, y:val}
+    }
+}
+</code></pre>
+<p>   <strong>关联类型示例</strong></p>
+<pre><code>impl Iterator for Pointer{
+    type Item = i32;
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;{
+        None
+    }
+}
+</code></pre>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-1/">
+                  <h3 class="post-title">
+                    quiz阅读笔记系列1
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
