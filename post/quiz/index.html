@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://jgl666.github.io/favicon.ico?v=1593153671458">
+<link rel="shortcut icon" href="https://jgl666.github.io/favicon.ico?v=1593163530348">
 <link rel="stylesheet" href="https://jgl666.github.io/styles/main.css">
 
 
@@ -19,6 +19,7 @@
 
 
     <meta name="description" content="原文链接
+参考
 问题
 struct S(i32);
 
@@ -26,7 +27,7 @@ impl std::ops::BitAnd&lt;S&gt; for () {
     type Output = ();
 
     fn bitand(self, rhs: S) {
-   ..." />
+..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -36,7 +37,7 @@ impl std::ops::BitAnd&lt;S&gt; for () {
   <div class="top-container" data-aos="fade-right">
     <div class="top-header-container">
       <a class="site-title-container" href="https://jgl666.github.io">
-        <img src="https://jgl666.github.io/images/avatar.png?v=1593153671458" class="site-logo">
+        <img src="https://jgl666.github.io/images/avatar.png?v=1593163530348" class="site-logo">
         <h1 class="site-title">JGL</h1>
       </a>
       <div class="menu-btn" @click="menuVisible = !menuVisible">
@@ -102,7 +103,8 @@ impl std::ops::BitAnd&lt;S&gt; for () {
             <div class="post-date">2020-06-26</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/2">原文链接</a></p>
+              <p><a href="https://dtolnay.github.io/rust-quiz/2">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
 <h2 id="问题br">问题<br></h2>
 <pre><code>struct S(i32);
 
@@ -167,13 +169,15 @@ return &amp;S(4); };
 <br>
 <h2 id="rust相关知识点">Rust相关知识点</h2>
 <ul>
-<li><strong>关联类型</strong><br><br>
+<li>
+<p><strong>关联类型</strong><br><br>
 关联类型是一个占位符，trait在方法签名的时候，暂时使用它来表示抽象的类型，<br>
-等到具体实现的时候指定具体的类型。<br></li>
-</ul>
-<p>   <strong>和泛型比较：</strong><br><br>
+等到具体实现的时候指定具体的类型。<br></p>
+<p><strong>和泛型比较：</strong><br><br>
    <strong>相同</strong>：关联类型和泛型一样都是延迟对trait使用具体类型的决定。<br><br>
    <strong>不同</strong>：当一个trait有一个泛型参数时，它可以为一个类型实现多次，每次更改泛型类型参数的具体类型。关联类型只能实现一次。<br></p>
+</li>
+</ul>
 <p>   <strong>泛型示例</strong></p>
 <pre><code>impl From&lt;(i32,i32)&gt; for Pointer{
     fn from(val:(i32,i32))-&gt;Pointer{

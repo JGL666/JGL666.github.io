@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>标签列表 | JGL</title>
+<title> quiz阅读笔记系列4 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -18,7 +18,19 @@
 
 
 
-    <meta name="description" content="温故而知新">
+    <meta name="description" content="原文链接
+参考
+问题
+fn main() {
+    let (.., x, y) = (0, 1, ..);
+    print!(&quot;{}&quot;, b&quot;066&quot;[y][x]);
+}
+
+解析
+NO.1
+
+..." />
+    <meta name="keywords" content="" />
   </head>
   <body>
     <div id="app" class="main">
@@ -88,10 +100,63 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <h2 class="tag-list-title">标签列表</h2>
-          <div class="tags-container">
+          <div class="post-detail">
+            <h2 class="post-title"> quiz阅读笔记系列4</h2>
+            <div class="post-date">2020-06-26</div>
             
+            <div class="post-content" v-pre>
+              <p><a href="https://dtolnay.github.io/rust-quiz/4">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<h2 id="问题">问题</h2>
+<pre><code>fn main() {
+    let (.., x, y) = (0, 1, ..);
+    print!(&quot;{}&quot;, b&quot;066&quot;[y][x]);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<pre><code> let (.., x, y) = (0, 1, ..);
+</code></pre>
+<p>X = 1<br>Y = ..<br></p>
+<pre><code>b&quot;066&quot;[..][1] = '6'
+</code></pre>
+<br>
+<h2 id="rust相关知识点">Rust相关知识点</h2>
+<p>Rust中..符号有三个含义，<a href="https://doc.rust-lang.org/reference/tokens.html#punctuation">官方文档</a><br>
+<br></p>
+<ul>
+<li>用作切片索引表示切割完整的数组<br>
+范围：<br>
+<img src="https://jgl666.github.io/post-images/1593158937516.png" alt="" loading="lazy"><br>
+示例<br>
+<img src="https://jgl666.github.io/post-images/1593158951682.png" alt="" loading="lazy"></li>
+<li>结构体表达式<br>
+结构表达式可以以语法..结尾。后跟表示函数更新的表达式。<br>
+<img src="https://jgl666.github.io/post-images/1593158965905.png" alt="" loading="lazy"></li>
+<li>模式匹配</li>
+</ul>
+<p>占位符(_)代表单个数据字段<br>
+而通配符…表示特定变体的所有其余字段。<br>
+<img src="https://jgl666.github.io/post-images/1593159010221.png" alt="" loading="lazy"></p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jgl666.github.io/post/quiz12/">
+                  <h3 class="post-title">
+                     quiz阅读笔记系列3
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
           </div>
+
         </div>
       </div>
     </div>

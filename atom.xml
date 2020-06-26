@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-06-26T06:41:14.688Z</updated>
+    <updated>2020-06-26T09:25:34.765Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -11,12 +11,334 @@
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
     <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列9]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-9/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-9/">
+        </link>
+        <updated>2020-06-26T09:08:06.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/9">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<pre><code>macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+
+macro_rules! e {
+    ($e:expr) =&gt; { m!($e) };
+}
+
+macro_rules! t {
+    ($tt:tt) =&gt; { e!($tt); m!($tt); };
+}
+
+fn main() {
+    t!(1);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>e!(1)扩展为m!(<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>e</mi><mo>)</mo><mi mathvariant="normal">，</mi><mi mathvariant="normal">其</mi><mi mathvariant="normal">中</mi></mrow><annotation encoding="application/x-tex">e)，其中</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">e</span><span class="mclose">)</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">其</span><span class="mord cjk_fallback">中</span></span></span></span>e是包含1的不透明表达式。它不会匹配字面量，只会匹配tt类型或者expr类型</p>
+<pre><code>macro_rules! e {
+    ($e:expr) =&gt; { m!($e) };
+}
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<pre><code>macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+</code></pre>
+<p>为什么expr 可以匹配到 tt<br><br>
+tt 是token类型，可以匹配任何类型，因为token包含一切符号。<br><br>
+详见<a href="https://stackoverflow.com/questions/40302026/what-does-the-tt-metavariable-type-mean-in-rust-macros">链接</a></p>
+<blockquote>
+<p>Token tree is the least demanding metavariable type: it matches anything. It's often used in macros which have a “don't really care” part, and especially in macros which have a “head” and a “tail” part. For example, the println! macros have a branch matching ($fmt:expr, <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo></mrow><annotation encoding="application/x-tex">(</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span></span></span></span>arg:tt)<em>) where $fmt is the format string, and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo></mrow><annotation encoding="application/x-tex">(</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span></span></span></span>arg:tt)</em> means “all the rest” and is just forwarded to format_args!. Which means that println! does not need to know the actual format and do complicated matching with it.</p>
+</blockquote>
+<p>如果变成下面的宏，就会匹配expr</p>
+<pre><code>macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($e:expr) =&gt; { print!(&quot;3&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+</code></pre>
+<h2 id="rust相关知识">Rust相关知识</h2>
+<p>不透明词条树 : 不能匹配字面量的词条树<br><br>
+以下是不透明词条类型</p>
+<pre><code>$:block
+$:expr
+$:item
+$:literal
+$:meta
+$:pat
+$:path
+$:stmt
+$:ty
+</code></pre>
+<p>透明词条类型</p>
+<pre><code>$:ident
+$:lifetime
+$:tt
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列8]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-8/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-8/">
+        </link>
+        <updated>2020-06-26T08:49:30.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/8">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<pre><code>macro_rules! m {
+    (==&gt;) =&gt; { print!(&quot;1&quot;); };
+    (= = &gt;) =&gt; { print!(&quot;2&quot;); };
+    (== &gt;) =&gt; { print!(&quot;3&quot;); };
+    (= =&gt;) =&gt; { print!(&quot;4&quot;); };
+}
+
+fn main() {
+    m!(==&gt;);
+    m!(= = &gt;);
+    m!(== &gt;);
+    m!(= =&gt;);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<pre><code> (==&gt;) =&gt; { print!(&quot;1&quot;); };
+</code></pre>
+<p>这个符号Rust中不存在，按照贪心算法，== 被分为一组，&gt;被分为一组</p>
+<pre><code>m!(==&gt;);
+m!(== &gt;);
+</code></pre>
+<p>这两个都会分组为（==） 和 (&gt;)</p>
+<h4 id="no2">NO.2</h4>
+<hr>
+<pre><code>m!(= = &gt;);
+</code></pre>
+<p>没什么好说的，三个组分别是(=)、(=)、(&gt;)</p>
+<h4 id="no3">NO3</h4>
+<hr>
+<pre><code>(= =&gt;) =&gt; { print!(&quot;4&quot;); };
+</code></pre>
+<p>没什么好说的，三个组分别是=)、(=&gt;)</p>
+<h2 id="rust相关知识">Rust相关知识</h2>
+<p>标点符号在macro_rules宏中会根据Rust中标点符号分组。</p>
+<pre><code>=&lt;&lt;
+</code></pre>
+<p>Rust的宏将=&lt;&lt;分组，分组依据是Rust中<a href="https://doc.rust-lang.org/reference/tokens.html#punctuation">标点符号</a>，根据贪心算法先取=, 后面的&lt;&lt;，遇到&lt;是一个符号，&lt;&lt;也是一个符号，就将&lt;&lt; 作为一个符号分组</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列7]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-7/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-7/">
+        </link>
+        <updated>2020-06-26T08:43:06.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/7">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<pre><code>
+#[repr(u8)]
+enum Enum {
+    First,
+    Second,
+}
+
+impl Enum {
+    fn p(self) {
+        match self {
+            First =&gt; print!(&quot;1&quot;),
+            Second =&gt; print!(&quot;2&quot;),
+        }
+    }
+}
+
+fn main() {
+    Enum::p(unsafe {
+        std::mem::transmute(1u8)
+    });
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>将一种类型的值的位重新解释为另一种类型。这两种类型必须具有相同的大小</p>
+<pre><code>std::mem::transmute(1u8)
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593161323734.png" alt="" loading="lazy"></figure>
+<h4 id="no2">NO.2</h4>
+<hr>
+<pre><code>#[repr(u8)]
+enum Enum {
+    First,
+    Second,
+}
+</code></pre>
+<p>实际为</p>
+<pre><code>#[repr(u8)]
+enum Enum {
+    First = 0u8,
+    Second = 1u8,
+}
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<pre><code>match self {
+    First =&gt; print!(&quot;1&quot;),
+    Second =&gt; print!(&quot;2&quot;),
+}
+</code></pre>
+<p>这里没有指定Fisrt为Enum::First, 这里<mark>First和second都是通配符</mark>，匹配第一个就停止了。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列6]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-6/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-6/">
+        </link>
+        <updated>2020-06-26T08:32:48.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://note.youdao.com/">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<pre><code>use std::mem;
+
+fn main() {
+    let a;
+    let a = a = true;
+    print!(&quot;{}&quot;, mem::size_of_val(&amp;a));
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<pre><code>//返回指向的值的大小(以字节为单位)
+size_of_val
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593160874878.png" alt="" loading="lazy"></figure>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>赋值表达式<br>
+<img src="https://jgl666.github.io/post-images/1593160883752.png" alt="" loading="lazy"><br>
+赋值表达式由位置表达式、等号(=)和值表达式组成。这样的表达式总是具有unit类型。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列4]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-4/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-4/">
+        </link>
+        <updated>2020-06-26T07:53:50.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/4">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<h2 id="问题">问题</h2>
+<pre><code>fn main() {
+    let (.., x, y) = (0, 1, ..);
+    print!(&quot;{}&quot;, b&quot;066&quot;[y][x]);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<pre><code> let (.., x, y) = (0, 1, ..);
+</code></pre>
+<p>X = 1<br>Y = ..<br></p>
+<pre><code>b&quot;066&quot;[..][1] = '6'
+</code></pre>
+<br>
+<h2 id="rust相关知识点">Rust相关知识点</h2>
+<p>Rust中..符号有三个含义，<a href="https://doc.rust-lang.org/reference/tokens.html#punctuation">官方文档</a><br>
+<br></p>
+<ul>
+<li>用作切片索引表示切割完整的数组<br>
+范围：<br>
+<img src="https://jgl666.github.io/post-images/1593158937516.png" alt="" loading="lazy"><br>
+示例<br>
+<img src="https://jgl666.github.io/post-images/1593158951682.png" alt="" loading="lazy"></li>
+<li>结构体表达式<br>
+结构表达式可以以语法..结尾。后跟表示函数更新的表达式。<br>
+<img src="https://jgl666.github.io/post-images/1593158965905.png" alt="" loading="lazy"></li>
+<li>模式匹配</li>
+</ul>
+<p>占位符(_)代表单个数据字段<br>
+而通配符…表示特定变体的所有其余字段。<br>
+<img src="https://jgl666.github.io/post-images/1593159010221.png" alt="" loading="lazy"></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列3]]></title>
+        <id>https://jgl666.github.io/post/quiz12/</id>
+        <link href="https://jgl666.github.io/post/quiz12/">
+        </link>
+        <updated>2020-06-26T06:47:44.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/3">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<h2 id="问题">问题</h2>
+<pre><code>struct S {
+    x: i32,
+}
+
+const S: S = S { x: 2 };
+
+fn main() {
+    let v = &amp;mut S;
+    v.x += 1;
+    S.x += 1;
+    print!(&quot;{}{}&quot;, v.x, S.x);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p><a href="https://doc.rust-lang.org/reference/items/constant-items.html">常量表达式</a>在使用时本质上是内联的，这意味着它们在使用时直接复制到相关的上下文中。<mark>对相同常量的引用不一定保证引用相同的内存地址</mark>。（相等于宏定义）<br><br>
+常量必须显式类型。类型必须具有静态生存期。</p>
+<pre><code>const S: S = S { x: 2 };
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>引用类型的任何名称都存在于<mark>类型名称空间</mark>中，引用值的任何名称都存在于<mark>值名称空间中</mark>。<br>这是<mark>两组独立的名称</mark>，该语言的结构使我们总是能够知道在哪个名称空间中查找名称。<br></p>
+<p>这是在类型空间</p>
+<pre><code>struct S {
+    x: i32,
+}
+</code></pre>
+<p>这是在值空间</p>
+<pre><code>const S: S = S { x: 2 };
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<pre><code>let v = &amp;mut S;
+v.x += 1;
+</code></pre>
+<p>相当于</p>
+<pre><code>let mut _tmp0 = S { x: 2 };
+let v = &amp;mut _tmp0;
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<pre><code>S.x += 1;
+</code></pre>
+<p>拓展成</p>
+<pre><code>S { x: 2 }.x += 1;
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<pre><code>print!(&quot;{}{}&quot;, v.x, S.x);
+</code></pre>
+<p>拓展成</p>
+<pre><code> print!(&quot;{}{}&quot;, v.x, S { x: 2 }.x);
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列2]]></title>
         <id>https://jgl666.github.io/post/quiz/</id>
         <link href="https://jgl666.github.io/post/quiz/">
         </link>
         <updated>2020-06-26T06:40:45.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/2">原文链接</a></p>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/2">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
 <h2 id="问题br">问题<br></h2>
 <pre><code>struct S(i32);
 
@@ -81,13 +403,15 @@ return &amp;S(4); };
 <br>
 <h2 id="rust相关知识点">Rust相关知识点</h2>
 <ul>
-<li><strong>关联类型</strong><br><br>
+<li>
+<p><strong>关联类型</strong><br><br>
 关联类型是一个占位符，trait在方法签名的时候，暂时使用它来表示抽象的类型，<br>
-等到具体实现的时候指定具体的类型。<br></li>
-</ul>
-<p>   <strong>和泛型比较：</strong><br><br>
+等到具体实现的时候指定具体的类型。<br></p>
+<p><strong>和泛型比较：</strong><br><br>
    <strong>相同</strong>：关联类型和泛型一样都是延迟对trait使用具体类型的决定。<br><br>
    <strong>不同</strong>：当一个trait有一个泛型参数时，它可以为一个类型实现多次，每次更改泛型类型参数的具体类型。关联类型只能实现一次。<br></p>
+</li>
+</ul>
 <p>   <strong>泛型示例</strong></p>
 <pre><code>impl From&lt;(i32,i32)&gt; for Pointer{
     fn from(val:(i32,i32))-&gt;Pointer{
@@ -118,7 +442,8 @@ impl From&lt;i32&gt; for Pointer{
         <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-1/">
         </link>
         <updated>2020-06-26T01:30:10.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/1">原文链接</a></p>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/1">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
 <h2 id="问题">问题</h2>
 <pre><code>macro_rules! m {
     ($($s:stmt)*) =&gt; {

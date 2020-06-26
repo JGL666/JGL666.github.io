@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>quiz阅读笔记系列9 | JGL</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://jgl666.github.io/favicon.ico?v=1593163530348">
+<link rel="stylesheet" href="https://jgl666.github.io/styles/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="原文链接
+参考
+macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+
+macro..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://jgl666.github.io">
+        <img src="https://jgl666.github.io/images/avatar.png?v=1593163530348" class="site-logo">
+        <h1 class="site-title">JGL</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      温故而知新
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://jgl666.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">quiz阅读笔记系列9</h2>
+            <div class="post-date">2020-06-26</div>
+            
+            <div class="post-content" v-pre>
+              <p><a href="https://dtolnay.github.io/rust-quiz/9">原文链接</a><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
+<pre><code>macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+
+macro_rules! e {
+    ($e:expr) =&gt; { m!($e) };
+}
+
+macro_rules! t {
+    ($tt:tt) =&gt; { e!($tt); m!($tt); };
+}
+
+fn main() {
+    t!(1);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>e!(1)扩展为m!(<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>e</mi><mo>)</mo><mi mathvariant="normal">，</mi><mi mathvariant="normal">其</mi><mi mathvariant="normal">中</mi></mrow><annotation encoding="application/x-tex">e)，其中</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">e</span><span class="mclose">)</span><span class="mord cjk_fallback">，</span><span class="mord cjk_fallback">其</span><span class="mord cjk_fallback">中</span></span></span></span>e是包含1的不透明表达式。它不会匹配字面量，只会匹配tt类型或者expr类型</p>
+<pre><code>macro_rules! e {
+    ($e:expr) =&gt; { m!($e) };
+}
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<pre><code>macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+</code></pre>
+<p>为什么expr 可以匹配到 tt<br><br>
+tt 是token类型，可以匹配任何类型，因为token包含一切符号。<br><br>
+详见<a href="https://stackoverflow.com/questions/40302026/what-does-the-tt-metavariable-type-mean-in-rust-macros">链接</a></p>
+<blockquote>
+<p>Token tree is the least demanding metavariable type: it matches anything. It's often used in macros which have a “don't really care” part, and especially in macros which have a “head” and a “tail” part. For example, the println! macros have a branch matching ($fmt:expr, <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo></mrow><annotation encoding="application/x-tex">(</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span></span></span></span>arg:tt)<em>) where $fmt is the format string, and <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo></mrow><annotation encoding="application/x-tex">(</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span></span></span></span>arg:tt)</em> means “all the rest” and is just forwarded to format_args!. Which means that println! does not need to know the actual format and do complicated matching with it.</p>
+</blockquote>
+<p>如果变成下面的宏，就会匹配expr</p>
+<pre><code>macro_rules! m {
+    (1) =&gt; { print!(&quot;1&quot;) };
+    ($e:expr) =&gt; { print!(&quot;3&quot;) };
+    ($tt:tt) =&gt; { print!(&quot;2&quot;) };
+}
+</code></pre>
+<h2 id="rust相关知识">Rust相关知识</h2>
+<p>不透明词条树 : 不能匹配字面量的词条树<br><br>
+以下是不透明词条类型</p>
+<pre><code>$:block
+$:expr
+$:item
+$:literal
+$:meta
+$:pat
+$:path
+$:stmt
+$:ty
+</code></pre>
+<p>透明词条类型</p>
+<pre><code>$:ident
+$:lifetime
+$:tt
+</code></pre>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-8/">
+                  <h3 class="post-title">
+                    quiz阅读笔记系列8
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+
+  </body>
+</html>
