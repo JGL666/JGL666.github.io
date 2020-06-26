@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-06-26T03:20:04.899Z</updated>
+    <updated>2020-06-26T05:41:56.647Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -35,6 +35,7 @@ fn main() {
     );
 }
 </code></pre>
+<br>
 <h2 id="解析">解析</h2>
 <h4 id="no1">NO1</h4>
 <hr>
@@ -56,9 +57,19 @@ stringify!将引用的token转为字符串</p>
 <pre><code> m! { return || true }
 </code></pre>
 <p>如下代码一样</p>
+<pre><code>fn main() {
+    fn get_f()-&gt;fn()-&gt;bool{
+        return || true;
+    }
+    let f: fn()-&gt;bool = get_f();
+    //true
+    println!(&quot;{}&quot;,f());
+}
+</code></pre>
 <h4 id="no4">NO4</h4>
 <hr>
-<p>(return) || true 是一个逻辑或表达式语句</p>
+<p>(return) || true 是一个逻辑或表达式语句<br><br>
+这里面都是表达式，整体作为一个表达式语句</p>
 <pre><code> m! { (return) || true }
 </code></pre>
 <h4 id="no5">NO5</h4>
@@ -67,6 +78,16 @@ stringify!将引用的token转为字符串</p>
 这是两个语句</p>
 <pre><code>m! { {return} || true }
 </code></pre>
+<br>
+<h2 id="rust相关知识点">Rust相关知识点</h2>
+<ul>
+<li>Rust中的语句<br><br>
+<a href="https://doc.rust-lang.org/reference/statements.html">官方文档</a><br><br>
+<img src="https://jgl666.github.io/post-images/1593149001372.PNG" alt="" loading="lazy"><br>
+<a href="https://doc.rust-lang.org/reference/items.html">Item</a>是包的组件，包括模块、函数、结构体等等。<br><br>
+块表达式语句可以没有分号，例如{}或者unsafe{}都是块表达式语句。<br><br>
+()是<a href="https://doc.rust-lang.org/reference/expressions/grouped-expr.html">分组表达式</a>，返回分组计算的结果。</li>
+</ul>
 ]]></content>
     </entry>
 </feed>
