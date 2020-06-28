@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-06-28T13:58:49.727Z</updated>
+    <updated>2020-06-28T14:04:17.390Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -11,7 +11,7 @@
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
     <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列10]]></title>
+        <title type="html"><![CDATA[ quiz阅读笔记系列5]]></title>
         <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-10/</id>
         <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-10/">
         </link>
