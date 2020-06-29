@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title> quiz阅读笔记系列7 | JGL</title>
+<title>消除歧义的完全限定语法 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -18,19 +18,16 @@
 
 
 
-    <meta name="description" content="原文链接
-参考
+    <meta name="description" content="消除歧义的完全限定语法
 
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+链接
+起因： 为同一种类型，实现不同的trait，这些trait中有同名的方法。同名的函数在调用的时候会产生歧义。
+如下
+trait Pilot {
+    fn fly(&amp;self);
 }
 
-impl Enum {
-    fn p(self) {
-        match self {
-           ..." />
+trait ..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -102,73 +99,101 @@ impl Enum {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title"> quiz阅读笔记系列7</h2>
-            <div class="post-date">2020-06-26</div>
+            <h2 class="post-title">消除歧义的完全限定语法</h2>
+            <div class="post-date">2020-06-29</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/7">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+              <h4 id="消除歧义的完全限定语法">消除歧义的完全限定语法</h4>
+<hr>
+<p><a href="https://doc.rust-lang.org/book/ch19-03-advanced-traits.html#fully-qualified-syntax-for-disambiguation-calling-methods-with-the-same-name">链接</a><br><br><br>
+<strong>起因：</strong> 为同一种类型，实现不同的trait，这些trait中有同名的方法。同名的函数在调用的时候会产生歧义。</p>
+<p>如下</p>
+<pre><code>trait Pilot {
+    fn fly(&amp;self);
 }
 
-impl Enum {
-    fn p(self) {
-        match self {
-            First =&gt; print!(&quot;1&quot;),
-            Second =&gt; print!(&quot;2&quot;),
-        }
+trait Wizard {
+    fn fly(&amp;self);
+}
+
+struct Human;
+
+impl Pilot for Human {
+    fn fly(&amp;self) {
+        println!(&quot;This is your captain speaking.&quot;);
+    }
+}
+
+impl Wizard for Human {
+    fn fly(&amp;self) {
+        println!(&quot;Up!&quot;);
+    }
+}
+
+impl Human {
+    fn fly(&amp;self) {
+        println!(&quot;*waving arms furiously*&quot;);
+    }
+}
+</code></pre>
+<p>上面的代码有三个重名的函数，类型自身的方法，以及 Pilot 和 Wizard 实现的方法。</p>
+<p>当使用Human类型的实例调用 fly 方法的时候，默认调用自身的方法。</p>
+<pre><code>fn main() {
+    let person = Human;
+    person.fly();
+}
+</code></pre>
+<p>为了调用 Pilot trait 或者 wizard trait，需要显示的语法指定。</p>
+<pre><code>fn main() {
+    let person = Human;
+    Pilot::fly(&amp;person);
+    Wizard::fly(&amp;person);
+    person.fly();
+}
+</code></pre>
+<p>关联函数没有self参数，如下。</p>
+<pre><code>trait Animal {
+    fn baby_name() -&gt; String;
+}
+
+struct Dog;
+
+impl Dog {
+    fn baby_name() -&gt; String {
+        String::from(&quot;Spot&quot;)
+    }
+}
+
+impl Animal for Dog {
+    fn baby_name() -&gt; String {
+        String::from(&quot;puppy&quot;)
     }
 }
 
 fn main() {
-    Enum::p(unsafe {
-        std::mem::transmute(1u8)
-    });
+    println!(&quot;A baby dog is called a {}&quot;, Dog::baby_name());
 }
 </code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>将一种类型的值的位重新解释为另一种类型。这两种类型必须具有相同的大小</p>
-<pre><code>std::mem::transmute(1u8)
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593161323734.png" alt="" loading="lazy"></figure>
-<h4 id="no2">NO.2</h4>
-<hr>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+<br>
+<p>Animal::baby_name是一个关联函数，而不是一个方法。它没有self参数，Rust不知道具体类型。<br>
+<br>为了消除歧义，采用如下调用</p>
+<pre><code>fn main() {
+    println!(&quot;A baby dog is called a {}&quot;, &lt;Dog as Animal&gt;::baby_name());
 }
 </code></pre>
-<p>实际为</p>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First = 0u8,
-    Second = 1u8,
-}
+<p>我们为Rust提供了尖括号内的类型注释，完全限定语法格式如下</p>
+<pre><code>&lt;Type as Trait&gt;::function(receiver_if_method, next_arg, ...);
 </code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<pre><code>match self {
-    First =&gt; print!(&quot;1&quot;),
-    Second =&gt; print!(&quot;2&quot;),
-}
-</code></pre>
-<p>这里没有指定Fisrt为Enum::First, 这里<mark>First和second都是通配符</mark>，匹配第一个就停止了。</p>
+<p>可以在调用函数或方法的任何地方使用完全限定语法。</p>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-6/">
+                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-10/">
                   <h3 class="post-title">
-                    quiz阅读笔记系列6
+                     quiz阅读笔记系列5
                   </h3>
                 </a>
               </div>
