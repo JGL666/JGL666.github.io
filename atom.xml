@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-06-29T08:26:09.057Z</updated>
+    <updated>2020-06-29T11:28:58.663Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,63 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列11]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-12/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-12/">
+        </link>
+        <updated>2020-06-29T09:13:26.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/11">原文链接</a><br>
+<br><br><br>
+<a href="https://zhuanlan.zhihu.com/p/101354383">Rust Quiz 解读汇总</a></p>
+<pre><code>fn f&lt;'a&gt;() {}
+fn g&lt;'a: 'a&gt;() {}
+
+fn main() {
+    let pf = f::&lt;'static&gt; as fn();
+    let pg = g::&lt;'static&gt; as fn();
+    print!(&quot;{}&quot;, pf == pg);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>失败：类型参数没有实例化</p>
+<pre><code>fn m&lt;T&gt;() {}
+
+fn main() {
+    let m1 = m::&lt;u8&gt;; // ok
+    let m2 = m; // error: cannot infer type for `T`
+}
+</code></pre>
+<br>
+<p>原文解释<br></p>
+<blockquote>
+<p>Since the actual choice of lifetime 'a depends on how it is called, we are allowed to omit the lifetime parameter and it will be determined at the call site. The lifetime can even be different for each time it gets called.</p>
+</blockquote>
+<pre><code>fn m&lt;'a&gt;(_: &amp;'a ()) {}
+
+fn main() {
+    let m1 = m; // ok even though 'a isn't provided
+}
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p><strong>原文</strong></p>
+<blockquote>
+<p>Lifetimes on data types are always early bound except when the developer has explicitly used the HRTB for syntax. On functions, lifetimes are late bound by default but can be early bound if:</p>
+<p>The lifetime is declared outside the function signature, e.g. in an associated method of a struct it could be from the struct itself; or</p>
+<p>The lifetime parameter is bounded below by some other lifetime that it must outlive. As we've seen, this constraint is not expressible in the HRTB that would be involved in late binding the lifetime.</p>
+<p>By these rules, the signature fn f&lt;'a&gt;() has a late bound lifetime parameter while the signature fn g&lt;'a: 'a&gt;() has an early bound lifetime parameter — even though the constraint here is ineffectual.</p>
+</blockquote>
+<br>
+<p><strong>规则如下</strong>：</p>
+<ul>
+<li>数据类型上的生命周期绑定都是早绑定，除非显示使用HRTB的for语法</li>
+<li>函数上生命周期绑定默认为迟绑定，除非函数签名外声明的生命周期，或者绑定到其它生命周期必须更长。</li>
+</ul>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列10]]></title>
         <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-11/</id>
@@ -658,111 +715,6 @@ let v = &amp;mut _tmp0;
 </code></pre>
 <p>拓展成</p>
 <pre><code> print!(&quot;{}{}&quot;, v.x, S { x: 2 }.x);
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列2]]></title>
-        <id>https://jgl666.github.io/post/quiz/</id>
-        <link href="https://jgl666.github.io/post/quiz/">
-        </link>
-        <updated>2020-06-26T06:40:45.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/2">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<h2 id="问题br">问题<br></h2>
-<pre><code>struct S(i32);
-
-impl std::ops::BitAnd&lt;S&gt; for () {
-    type Output = ();
-
-    fn bitand(self, rhs: S) {
-        print!(&quot;{}&quot;, rhs.0);
-    }
-}
-
-fn main() {
-    let f = || ( () &amp; S(1) );
-    let g = || { () &amp; S(2) };
-    let h = || ( {} &amp; S(3) );
-    let i = || { {} &amp; S(4) };
-    f();
-    g();
-    h();
-    i();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>（）是分组表达式，结果是整个括号内部计算的结果，是一条表达式语句。<br><br>
-闭包返回的是一个分组表达式，计算结果为括号内部的计算结果。即调用bitand输出1</p>
-<pre><code> let f = || ( () &amp; S(1) );
-</code></pre>
-<br>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>块表达式语句中只有一条表达式语句，计算结果就是() &amp; S(2)结果，即调用bitand输出2</p>
-<pre><code> let g = || { () &amp; S(2) };
-</code></pre>
-<br>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p>闭包返回一个<a href="https://doc.rust-lang.org/reference/expressions/grouped-expr.html">分组表达式</a>。</p>
-<pre><code>let h = || ( {} &amp; S(3) );
-</code></pre>
-<p>拿掉外面的()，计算如下表达式</p>
-<pre><code> {} &amp; S(3)
-</code></pre>
-<p>因为{}是一个块表达式，默认返回单元类型(),所以最终相当于计算</p>
-<pre><code>() &amp; S(3)
-</code></pre>
-<p>最后输出3</p>
-<br>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>闭包返回的是块表达式，块表达式是按顺序执行表达式中的语句。</p>
-<pre><code> let i = || { {} &amp; S(4) };
-</code></pre>
-<p>该块表达式一共有两条语句，一条是{}<a href="https://doc.rust-lang.org/reference/expressions/block-expr.html">块表达式语句</a>，另一条是<a href="https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions">位置表达式语句</a>。因为是块表达式的最后一句，作为块表达式的返回值，<mark>本来表达式作为语句需要加分号，现在不用加了</mark>。<br><br>
-所以执行流程如下</p>
-<pre><code>let i = || { 
-{};
-return &amp;S(4); };
-</code></pre>
-<p>最后返回&amp;S(4),什么输出也没有。</p>
-<br>
-<h2 id="rust相关知识点">Rust相关知识点</h2>
-<ul>
-<li>
-<p><strong>关联类型</strong><br><br>
-关联类型是一个占位符，trait在方法签名的时候，暂时使用它来表示抽象的类型，<br>
-等到具体实现的时候指定具体的类型。<br></p>
-<p><strong>和泛型比较：</strong><br><br>
-   <strong>相同</strong>：关联类型和泛型一样都是延迟对trait使用具体类型的决定。<br><br>
-   <strong>不同</strong>：当一个trait有一个泛型参数时，它可以为一个类型实现多次，每次更改泛型类型参数的具体类型。关联类型只能实现一次。<br></p>
-</li>
-</ul>
-<p>   <strong>泛型示例</strong></p>
-<pre><code>impl From&lt;(i32,i32)&gt; for Pointer{
-    fn from(val:(i32,i32))-&gt;Pointer{
-        Pointer{x:val.0, y:val.1}
-    }
-}
-
-
-impl From&lt;i32&gt; for Pointer{
-    fn from(val:i32)-&gt;Pointer{
-        Pointer{x:val, y:val}
-    }
-}
-</code></pre>
-<p>   <strong>关联类型示例</strong></p>
-<pre><code>impl Iterator for Pointer{
-    type Item = i32;
-    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;{
-        None
-    }
-}
 </code></pre>
 ]]></content>
     </entry>
