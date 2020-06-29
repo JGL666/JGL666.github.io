@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-06-29T11:28:58.663Z</updated>
+    <updated>2020-06-29T15:01:45.798Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,63 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列12]]></title>
+        <id>https://jgl666.github.io/post/11/</id>
+        <link href="https://jgl666.github.io/post/11/">
+        </link>
+        <updated>2020-06-29T15:01:04.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/12">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>struct D(u8);
+
+impl Drop for D {
+    fn drop(&amp;mut self) {
+        print!(&quot;{}&quot;, self.0);
+    }
+}
+
+struct S {
+    d: D,
+    x: u8,
+}
+
+fn main() {
+    let S { x, .. } = S {
+        d: D(1),
+        x: 2,
+    };
+    print!(&quot;{}&quot;, x);
+
+    let S { ref x, .. } = S {
+        d: D(3),
+        x: 4,
+    };
+    print!(&quot;{}&quot;, x);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>生成了临时变量S_temp, 然后采用模式匹配，这里x是值拷贝。<br>
+S会立马析构，输出12</p>
+<pre><code>    let S { x, .. } = S {
+        d: D(1),
+        x: 2,
+    };
+    print!(&quot;{}&quot;, x);
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>这里x是对临时变量内部字段的引用，临时变量还不能释放，不然会造成悬垂指针。</p>
+<pre><code>let S { ref x, .. } = S {
+    d: D(3),
+    x: 4,
+};
+print!(&quot;{}&quot;, x);
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[ quiz阅读笔记系列11]]></title>
         <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-12/</id>
@@ -651,71 +708,6 @@ size_of_val
 <p>占位符(_)代表单个数据字段<br>
 而通配符…表示特定变体的所有其余字段。<br>
 <img src="https://jgl666.github.io/post-images/1593159010221.png" alt="" loading="lazy"></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列3]]></title>
-        <id>https://jgl666.github.io/post/quiz12/</id>
-        <link href="https://jgl666.github.io/post/quiz12/">
-        </link>
-        <updated>2020-06-26T06:47:44.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/3">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<h2 id="问题">问题</h2>
-<pre><code>struct S {
-    x: i32,
-}
-
-const S: S = S { x: 2 };
-
-fn main() {
-    let v = &amp;mut S;
-    v.x += 1;
-    S.x += 1;
-    print!(&quot;{}{}&quot;, v.x, S.x);
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p><a href="https://doc.rust-lang.org/reference/items/constant-items.html">常量表达式</a>在使用时本质上是内联的，这意味着它们在使用时直接复制到相关的上下文中。<mark>对相同常量的引用不一定保证引用相同的内存地址</mark>。（相等于宏定义）<br><br>
-常量必须显式类型。类型必须具有静态生存期。</p>
-<pre><code>const S: S = S { x: 2 };
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>引用类型的任何名称都存在于<mark>类型名称空间</mark>中，引用值的任何名称都存在于<mark>值名称空间中</mark>。<br>这是<mark>两组独立的名称</mark>，该语言的结构使我们总是能够知道在哪个名称空间中查找名称。<br></p>
-<p>这是在类型空间</p>
-<pre><code>struct S {
-    x: i32,
-}
-</code></pre>
-<p>这是在值空间</p>
-<pre><code>const S: S = S { x: 2 };
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<pre><code>let v = &amp;mut S;
-v.x += 1;
-</code></pre>
-<p>相当于</p>
-<pre><code>let mut _tmp0 = S { x: 2 };
-let v = &amp;mut _tmp0;
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<hr>
-<pre><code>S.x += 1;
-</code></pre>
-<p>拓展成</p>
-<pre><code>S { x: 2 }.x += 1;
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<hr>
-<pre><code>print!(&quot;{}{}&quot;, v.x, S.x);
-</code></pre>
-<p>拓展成</p>
-<pre><code> print!(&quot;{}{}&quot;, v.x, S { x: 2 }.x);
-</code></pre>
 ]]></content>
     </entry>
 </feed>
