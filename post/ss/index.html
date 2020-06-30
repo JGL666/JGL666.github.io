@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title> quiz阅读笔记系列7 | JGL</title>
+<title>quiz阅读笔记系列14 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -19,18 +19,12 @@
 
 
     <meta name="description" content="原文链接
-参考
-
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+Rust Quiz 解读汇总
+trait Trait: Sized {
+    fn is_reference(self) -&gt; bool;
 }
 
-impl Enum {
-    fn p(self) {
-        match self {
-           ..." />
+impl&lt;'a, T&gt; Trait for &amp;'a T ..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -102,73 +96,81 @@ impl Enum {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title"> quiz阅读笔记系列7</h2>
-            <div class="post-date">2020-06-26</div>
+            <h2 class="post-title">quiz阅读笔记系列14</h2>
+            <div class="post-date">2020-06-30</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/7">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+              <p><a href="https://dtolnay.github.io/rust-quiz/14">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>trait Trait: Sized {
+    fn is_reference(self) -&gt; bool;
 }
 
-impl Enum {
-    fn p(self) {
-        match self {
-            First =&gt; print!(&quot;1&quot;),
-            Second =&gt; print!(&quot;2&quot;),
-        }
+impl&lt;'a, T&gt; Trait for &amp;'a T {
+    fn is_reference(self) -&gt; bool {
+        true
     }
 }
 
 fn main() {
-    Enum::p(unsafe {
-        std::mem::transmute(1u8)
-    });
+    match 0.is_reference() {
+        true =&gt; print!(&quot;1&quot;),
+        false =&gt; print!(&quot;0&quot;),
+    }
+
+    match '?'.is_reference() {
+        true =&gt; print!(&quot;1&quot;),
+        false =&gt; {
+            impl Trait for char {
+                fn is_reference(self) -&gt; bool {
+                    false
+                }
+            }
+            print!(&quot;0&quot;)
+        }
+    }
 }
 </code></pre>
 <h2 id="解析">解析</h2>
 <h4 id="no1">NO.1</h4>
 <hr>
-<p>将一种类型的值的位重新解释为另一种类型。这两种类型必须具有相同的大小</p>
-<pre><code>std::mem::transmute(1u8)
+<p>这里如果0.is_reference没有找到对应的方法的话，编译器会自动加上继续寻找</p>
+<pre><code>match 0.is_reference() {
+    true =&gt; print!(&quot;1&quot;),
+    false =&gt; print!(&quot;0&quot;),
+}
 </code></pre>
-<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593161323734.png" alt="" loading="lazy"></figure>
 <h4 id="no2">NO.2</h4>
 <hr>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First,
-    Second,
-}
+<p>impl在整个程序中都是可见的，而不仅仅是在包含impl的块中。</p>
+<pre><code>    match '?'.is_reference() {
+        true =&gt; print!(&quot;1&quot;),
+        false =&gt; {
+            impl Trait for char {
+                fn is_reference(self) -&gt; bool {
+                    false
+                }
+            }
+            print!(&quot;0&quot;)
+        }
+    }
 </code></pre>
-<p>实际为</p>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First = 0u8,
-    Second = 1u8,
-}
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<pre><code>match self {
-    First =&gt; print!(&quot;1&quot;),
-    Second =&gt; print!(&quot;2&quot;),
-}
-</code></pre>
-<p>这里没有指定Fisrt为Enum::First, 这里<mark>First和second都是通配符</mark>，匹配第一个就停止了。</p>
+<h2 id="rust相关知识">Rust相关知识</h2>
+<p><a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html">方法调用表达式</a></p>
+<blockquote>
+<p>The first step is to build a list of candidate receiver types. Obtain these by repeatedly dereferencing the receiver expression's type, adding each type encountered to the list, then finally attempting an unsized coercion at the end, and adding the result type if that is successful. Then, for each candidate T, add &amp;T and &amp;mut T to the list immediately after T.</p>
+<p>For instance, if the receiver has type Box&lt;[i32;2]&gt;, then the candidate types will be Box&lt;[i32;2]&gt;, &amp;Box&lt;[i32;2]&gt;, &amp;mut Box&lt;[i32;2]&gt;, [i32; 2] (by dereferencing), &amp;[i32; 2], &amp;mut [i32; 2], [i32] (by unsized coercion), &amp;[i32], and finally &amp;mut [i32].</p>
+</blockquote>
+<p>Rust在调用方法的时候，<mark>通过重复解除对接收方表达式的类型的引用，将遇到的每种类型添加到列表中来获取这些值。</mark> 然后，对于每个候选T，添加&amp;T和&amp;mut到紧接在T之后的列表中。</p>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-6/">
+                <a href="https://jgl666.github.io/post/rustquiz13/">
                   <h3 class="post-title">
-                    quiz阅读笔记系列6
+                     quiz阅读笔记系列13
                   </h3>
                 </a>
               </div>
