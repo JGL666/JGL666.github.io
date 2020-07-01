@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列10 | JGL</title>
+<title>quiz阅读笔记系列15 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -19,13 +19,14 @@
 
 
     <meta name="description" content="原文链接
+Rust Quiz 解读汇总
 trait Trait {
     fn f(&amp;self);
 }
 
-impl&lt;'a&gt; dyn Trait + 'a {
+impl Trait for u32 {
     fn f(&amp;self) {
-        print!(&quot;1&..." />
+        print!(&quo..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -97,122 +98,116 @@ impl&lt;'a&gt; dyn Trait + 'a {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列10</h2>
-            <div class="post-date">2020-06-29</div>
+            <h2 class="post-title">quiz阅读笔记系列15</h2>
+            <div class="post-date">2020-07-01</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/10">原文链接</a></p>
+              <p><a href="https://dtolnay.github.io/rust-quiz/15">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
 <pre><code>trait Trait {
     fn f(&amp;self);
 }
 
-impl&lt;'a&gt; dyn Trait + 'a {
+impl Trait for u32 {
     fn f(&amp;self) {
         print!(&quot;1&quot;);
     }
 }
 
-impl Trait for bool {
+impl&lt;'a&gt; Trait for &amp;'a i32 {
     fn f(&amp;self) {
         print!(&quot;2&quot;);
     }
 }
 
 fn main() {
-    Trait::f(&amp;true);
-    Trait::f(&amp;true as &amp;dyn Trait);
-    &lt;_ as Trait&gt;::f(&amp;true);
-    &lt;_ as Trait&gt;::f(&amp;true as &amp;dyn Trait);
-    &lt;bool as Trait&gt;::f(&amp;true);
+    let x = &amp;0;
+    x.f();
 }
 </code></pre>
-<br>
 <h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>调用Trait这个trait 为bool类型实现的f方法</p>
-<pre><code>Trait::f(&amp;true);
+<p>原理详见<a href="https://stackoverflow.com/questions/28519997/what-are-rusts-exact-auto-dereferencing-rules/28552082#28552082">stackoverflow</a><br></p>
+<p>给出了方法解引用步骤</p>
+<blockquote>
+<p>The core of the algorithm is:</p>
+<p>For each &quot;dereference step&quot; U (that is, set U = T and then U = *T, ...)<br><br>
+1、if there's a method bar where the receiver type (the type of self in the method) matches U exactly , use it (a &quot;by value method&quot;)<br><br>
+2、otherwise, add one auto-ref (take &amp; or &amp;mut of the receiver), and, if some method's receiver matches &amp;U, use it (an &quot;autorefd method&quot;)</p>
+</blockquote>
+<p>对于上面这题两个trait 实现，这里u32和&amp;u32是两个类型。</p>
+<pre><code>impl Trait for u32 
+impl&lt;'a&gt; Trait for &amp;'a i32
 </code></pre>
-<br>
-示例如下
-<pre><code>trait Trait1{
-    fn do_something(&amp;self);
+<p>现在应用上面的规则：<br><br>
+对于</p>
+<pre><code>let x = &amp;0;
+</code></pre>
+<p>此时U为&amp;x，完全匹配方法f的参数类型&amp;self。适用于第一条规则。</p>
+<pre><code>//等同于fn f(&amp;u32)
+fn f(&amp;self) {
+    print!(&quot;1&quot;);
+}
+</code></pre>
+<p>如果这个时候注释掉</p>
+<pre><code>impl Trait for u32 {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+}
+</code></pre>
+<p>此时第一条规则不成立，尝试第二条规则，给类型自动加引用。此时x的类型如下：</p>
+<pre><code>x: &amp;&amp;u32
+</code></pre>
+<p>因为针对&amp;u32有实现的trait</p>
+<pre><code>impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<p>此时self 为&amp; &amp;u32,而x为&amp; &amp;u32, 满足参数类型。所以输出2。</p>
+<h2 id="拓展">拓展</h2>
+<pre><code>trait Trait {
+    fn f(&amp;self);
 }
 
-trait Trait2{
-    fn do_something(&amp;self);
-}
-
-struct S;
-impl Trait1 for S{
-    fn do_something(&amp;self){
-        println!(&quot;Trait1&quot;);
+impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
     }
 }
 
-impl Trait2 for S{
-    fn do_something(&amp;self){
-        println!(&quot;Trait2&quot;);
+impl&lt;'a&gt; Trait for &amp;'a &amp;i32 {
+    fn f(&amp;self) {
+        print!(&quot;3&quot;);
     }
 }
-
 
 fn main() {
-    //Trait1
-    Trait1::do_something(&amp;S);
-    //Trait2
-    Trait2::do_something(&amp;S);
+    let x = &amp;&amp;0;
+    x.f();
 }
 </code></pre>
-<br>
-<h4 id="no2">NO.2</h4>
+<p>上面代码输出2<br></p>
 <hr>
-<p>trait 对象内置的方法会被具体类型实现的方法遮蔽</p>
-<pre><code>Trait::f(&amp;true as &amp;dyn Trait);
-</code></pre>
-<br>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p><a href="https://jgl666.github.io/post/xiao-chu-qi-yi-de-wan-quan-xian-ding-yu-fa/">消除歧义的完全限定语法</a>用来调用trait内部的关联函数或者调用指定trait实现的方法。</p>
-<pre><code>&lt;_ as Trait&gt;::f(&amp;true);
-//内部方法被遮蔽
-&lt;_ as Trait&gt;::f(&amp;true as &amp;dyn Trait);
-</code></pre>
-<p>示例如下：</p>
-<pre><code>trait Trait1{
-    fn do_something(){
-        println!(&quot;trait 1 do something&quot;)
+<p>当注释掉</p>
+<pre><code>impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
     }
 }
-
-
-struct S;
-impl Trait1 for S{}
-impl S{
-    fn do_something(){
-        println!(&quot;S do something&quot;)
-    }
-}
-fn main() {
-    S::do_something();
-    &lt;S as Trait1&gt;::do_something();
-}
 </code></pre>
-<br>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>同上</p>
-<pre><code>&lt;bool as Trait&gt;::f(&amp;true);
-</code></pre>
+<p>输出3<br><br>
+原理同上</p>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/xiao-chu-qi-yi-de-wan-quan-xian-ding-yu-fa/">
+                <a href="https://jgl666.github.io/post/ss/">
                   <h3 class="post-title">
-                    消除歧义的完全限定语法
+                    quiz阅读笔记系列14
                   </h3>
                 </a>
               </div>

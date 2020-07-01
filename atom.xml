@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-06-30T05:18:16.041Z</updated>
+    <updated>2020-07-01T08:04:49.410Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,111 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列15]]></title>
+        <id>https://jgl666.github.io/post/xxx/</id>
+        <link href="https://jgl666.github.io/post/xxx/">
+        </link>
+        <updated>2020-07-01T08:04:28.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/15">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+}
+
+impl Trait for u32 {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+fn main() {
+    let x = &amp;0;
+    x.f();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>原理详见<a href="https://stackoverflow.com/questions/28519997/what-are-rusts-exact-auto-dereferencing-rules/28552082#28552082">stackoverflow</a><br></p>
+<p>给出了方法解引用步骤</p>
+<blockquote>
+<p>The core of the algorithm is:</p>
+<p>For each &quot;dereference step&quot; U (that is, set U = T and then U = *T, ...)<br><br>
+1、if there's a method bar where the receiver type (the type of self in the method) matches U exactly , use it (a &quot;by value method&quot;)<br><br>
+2、otherwise, add one auto-ref (take &amp; or &amp;mut of the receiver), and, if some method's receiver matches &amp;U, use it (an &quot;autorefd method&quot;)</p>
+</blockquote>
+<p>对于上面这题两个trait 实现，这里u32和&amp;u32是两个类型。</p>
+<pre><code>impl Trait for u32 
+impl&lt;'a&gt; Trait for &amp;'a i32
+</code></pre>
+<p>现在应用上面的规则：<br><br>
+对于</p>
+<pre><code>let x = &amp;0;
+</code></pre>
+<p>此时U为&amp;x，完全匹配方法f的参数类型&amp;self。适用于第一条规则。</p>
+<pre><code>//等同于fn f(&amp;u32)
+fn f(&amp;self) {
+    print!(&quot;1&quot;);
+}
+</code></pre>
+<p>如果这个时候注释掉</p>
+<pre><code>impl Trait for u32 {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+}
+</code></pre>
+<p>此时第一条规则不成立，尝试第二条规则，给类型自动加引用。此时x的类型如下：</p>
+<pre><code>x: &amp;&amp;u32
+</code></pre>
+<p>因为针对&amp;u32有实现的trait</p>
+<pre><code>impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<p>此时self 为&amp; &amp;u32,而x为&amp; &amp;u32, 满足参数类型。所以输出2。</p>
+<h2 id="拓展">拓展</h2>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+}
+
+impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+impl&lt;'a&gt; Trait for &amp;'a &amp;i32 {
+    fn f(&amp;self) {
+        print!(&quot;3&quot;);
+    }
+}
+
+fn main() {
+    let x = &amp;&amp;0;
+    x.f();
+}
+</code></pre>
+<p>上面代码输出2<br></p>
+<hr>
+<p>当注释掉</p>
+<pre><code>impl&lt;'a&gt; Trait for &amp;'a i32 {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<p>输出3<br><br>
+原理同上</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列14]]></title>
         <id>https://jgl666.github.io/post/ss/</id>
@@ -671,68 +776,6 @@ m!(== &gt;);
 <pre><code>=&lt;&lt;
 </code></pre>
 <p>Rust的宏将=&lt;&lt;分组，分组依据是Rust中<a href="https://doc.rust-lang.org/reference/tokens.html#punctuation">标点符号</a>，根据贪心算法先取=, 后面的&lt;&lt;，遇到&lt;是一个符号，&lt;&lt;也是一个符号，就将&lt;&lt; 作为一个符号分组</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列7]]></title>
-        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-7/</id>
-        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-7/">
-        </link>
-        <updated>2020-06-26T08:43:06.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/7">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
-}
-
-impl Enum {
-    fn p(self) {
-        match self {
-            First =&gt; print!(&quot;1&quot;),
-            Second =&gt; print!(&quot;2&quot;),
-        }
-    }
-}
-
-fn main() {
-    Enum::p(unsafe {
-        std::mem::transmute(1u8)
-    });
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>将一种类型的值的位重新解释为另一种类型。这两种类型必须具有相同的大小</p>
-<pre><code>std::mem::transmute(1u8)
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593161323734.png" alt="" loading="lazy"></figure>
-<h4 id="no2">NO.2</h4>
-<hr>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First,
-    Second,
-}
-</code></pre>
-<p>实际为</p>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First = 0u8,
-    Second = 1u8,
-}
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<pre><code>match self {
-    First =&gt; print!(&quot;1&quot;),
-    Second =&gt; print!(&quot;2&quot;),
-}
-</code></pre>
-<p>这里没有指定Fisrt为Enum::First, 这里<mark>First和second都是通配符</mark>，匹配第一个就停止了。</p>
 ]]></content>
     </entry>
 </feed>
