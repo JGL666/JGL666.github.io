@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-01T08:04:49.410Z</updated>
+    <updated>2020-07-02T05:05:10.388Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,89 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列20]]></title>
+        <id>https://jgl666.github.io/post/s/</id>
+        <link href="https://jgl666.github.io/post/s/">
+        </link>
+        <updated>2020-07-02T05:04:42.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/15">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
+}
+
+fn return2() {
+    if return { print!(&quot;2&quot;) } {
+    }
+}
+
+fn break1() {
+    loop {
+        if (break { print!(&quot;1&quot;) }) {
+        }
+    }
+}
+
+fn break2() {
+    loop {
+        if break { print!(&quot;2&quot;) } {
+        }
+    }
+}
+
+fn main() {
+    return1();
+    return2();
+    break1();
+    break2();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>参照<a href="https://doc.rust-lang.org/reference/expressions.html#expression-precedence">表达式优先级</a><br></p>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>return 总是优化处理后面的表达式</p>
+<pre><code>fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
+}
+
+fn return2() {
+    if return { print!(&quot;2&quot;) } {
+    }
+}
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>() 优先级大于break，先计算括号表达式，输出1</p>
+<pre><code>fn break1() {
+    loop {
+        if (break { print!(&quot;1&quot;) }) {
+        }
+    }
+}
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<pre><code>fn break2() {
+    loop {
+        if break { print!(&quot;2&quot;) } {
+        }
+    }
+}
+</code></pre>
+<p>和return 不一样，break不优先处理后面的表达式，上面的函数格式化如下。break在 {println!(&quot;2&quot;)} 之前就退出了。</p>
+<pre><code>fn break2() {
+    loop {
+        if break
+        { print!(&quot;2&quot;) }
+        {}
+    }
+}
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列15]]></title>
         <id>https://jgl666.github.io/post/xxx/</id>
@@ -727,55 +810,6 @@ $:ty
 $:lifetime
 $:tt
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列8]]></title>
-        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-8/</id>
-        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-8/">
-        </link>
-        <updated>2020-06-26T08:49:30.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/8">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>macro_rules! m {
-    (==&gt;) =&gt; { print!(&quot;1&quot;); };
-    (= = &gt;) =&gt; { print!(&quot;2&quot;); };
-    (== &gt;) =&gt; { print!(&quot;3&quot;); };
-    (= =&gt;) =&gt; { print!(&quot;4&quot;); };
-}
-
-fn main() {
-    m!(==&gt;);
-    m!(= = &gt;);
-    m!(== &gt;);
-    m!(= =&gt;);
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<pre><code> (==&gt;) =&gt; { print!(&quot;1&quot;); };
-</code></pre>
-<p>这个符号Rust中不存在，按照贪心算法，== 被分为一组，&gt;被分为一组</p>
-<pre><code>m!(==&gt;);
-m!(== &gt;);
-</code></pre>
-<p>这两个都会分组为（==） 和 (&gt;)</p>
-<h4 id="no2">NO.2</h4>
-<hr>
-<pre><code>m!(= = &gt;);
-</code></pre>
-<p>没什么好说的，三个组分别是(=)、(=)、(&gt;)</p>
-<h4 id="no3">NO3</h4>
-<hr>
-<pre><code>(= =&gt;) =&gt; { print!(&quot;4&quot;); };
-</code></pre>
-<p>没什么好说的，三个组分别是=)、(=&gt;)</p>
-<h2 id="rust相关知识">Rust相关知识</h2>
-<p>标点符号在macro_rules宏中会根据Rust中标点符号分组。</p>
-<pre><code>=&lt;&lt;
-</code></pre>
-<p>Rust的宏将=&lt;&lt;分组，分组依据是Rust中<a href="https://doc.rust-lang.org/reference/tokens.html#punctuation">标点符号</a>，根据贪心算法先取=, 后面的&lt;&lt;，遇到&lt;是一个符号，&lt;&lt;也是一个符号，就将&lt;&lt; 作为一个符号分组</p>
 ]]></content>
     </entry>
 </feed>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title> quiz阅读笔记系列7 | JGL</title>
+<title> quiz阅读笔记系列20 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -19,18 +19,14 @@
 
 
     <meta name="description" content="原文链接
-参考
-
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+Rust Quiz 解读汇总
+fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
 }
 
-impl Enum {
-    fn p(self) {
-        match self {
-           ..." />
+fn return2() {
+    if return { p..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -102,73 +98,94 @@ impl Enum {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title"> quiz阅读笔记系列7</h2>
-            <div class="post-date">2020-06-26</div>
+            <h2 class="post-title"> quiz阅读笔记系列20</h2>
+            <div class="post-date">2020-07-02</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/7">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>
-#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+              <p><a href="https://dtolnay.github.io/rust-quiz/15">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
 }
 
-impl Enum {
-    fn p(self) {
-        match self {
-            First =&gt; print!(&quot;1&quot;),
-            Second =&gt; print!(&quot;2&quot;),
+fn return2() {
+    if return { print!(&quot;2&quot;) } {
+    }
+}
+
+fn break1() {
+    loop {
+        if (break { print!(&quot;1&quot;) }) {
+        }
+    }
+}
+
+fn break2() {
+    loop {
+        if break { print!(&quot;2&quot;) } {
         }
     }
 }
 
 fn main() {
-    Enum::p(unsafe {
-        std::mem::transmute(1u8)
-    });
+    return1();
+    return2();
+    break1();
+    break2();
 }
 </code></pre>
 <h2 id="解析">解析</h2>
+<p>参照<a href="https://doc.rust-lang.org/reference/expressions.html#expression-precedence">表达式优先级</a><br></p>
 <h4 id="no1">NO.1</h4>
 <hr>
-<p>将一种类型的值的位重新解释为另一种类型。这两种类型必须具有相同的大小</p>
-<pre><code>std::mem::transmute(1u8)
-</code></pre>
-<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593161323734.png" alt="" loading="lazy"></figure>
-<h4 id="no2">NO.2</h4>
-<hr>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First,
-    Second,
+<p>return 总是优化处理后面的表达式</p>
+<pre><code>fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
+}
+
+fn return2() {
+    if return { print!(&quot;2&quot;) } {
+    }
 }
 </code></pre>
-<p>实际为</p>
-<pre><code>#[repr(u8)]
-enum Enum {
-    First = 0u8,
-    Second = 1u8,
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>() 优先级大于break，先计算括号表达式，输出1</p>
+<pre><code>fn break1() {
+    loop {
+        if (break { print!(&quot;1&quot;) }) {
+        }
+    }
 }
 </code></pre>
 <h4 id="no3">NO.3</h4>
-<hr>
-<pre><code>match self {
-    First =&gt; print!(&quot;1&quot;),
-    Second =&gt; print!(&quot;2&quot;),
+<pre><code>fn break2() {
+    loop {
+        if break { print!(&quot;2&quot;) } {
+        }
+    }
 }
 </code></pre>
-<p>这里没有指定Fisrt为Enum::First, 这里<mark>First和second都是通配符</mark>，匹配第一个就停止了。</p>
+<p>和return 不一样，break不优先处理后面的表达式，上面的函数格式化如下。break在 {println!(&quot;2&quot;)} 之前就退出了。</p>
+<pre><code>fn break2() {
+    loop {
+        if break
+        { print!(&quot;2&quot;) }
+        {}
+    }
+}
+</code></pre>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-6/">
+                <a href="https://jgl666.github.io/post/xxx/">
                   <h3 class="post-title">
-                    quiz阅读笔记系列6
+                    quiz阅读笔记系列15
                   </h3>
                 </a>
               </div>
