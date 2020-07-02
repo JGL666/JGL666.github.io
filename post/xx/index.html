@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列14 | JGL</title>
+<title>quiz阅读笔记系列32 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -20,11 +20,14 @@
 
     <meta name="description" content="原文链接
 Rust Quiz 解读汇总
-trait Trait: Sized {
-    fn is_reference(self) -&gt; bool;
+
+fn check(x: i32) -&gt; bool {
+    print!(&quot;{}&quot;, x);
+    false
 }
 
-impl&lt;'a, T&gt; Trait for &amp;'a T ..." />
+fn main() {
+    match (1,..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -96,81 +99,59 @@ impl&lt;'a, T&gt; Trait for &amp;'a T ..." />
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列14</h2>
-            <div class="post-date">2020-06-30</div>
+            <h2 class="post-title">quiz阅读笔记系列32</h2>
+            <div class="post-date">2020-07-02</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/14">原文链接</a><br><br>
+              <p><a href="https://dtolnay.github.io/rust-quiz/32">原文链接</a><br><br>
 <a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>trait Trait: Sized {
-    fn is_reference(self) -&gt; bool;
-}
-
-impl&lt;'a, T&gt; Trait for &amp;'a T {
-    fn is_reference(self) -&gt; bool {
-        true
-    }
+<hr>
+<pre><code>fn check(x: i32) -&gt; bool {
+    print!(&quot;{}&quot;, x);
+    false
 }
 
 fn main() {
-    match 0.is_reference() {
-        true =&gt; print!(&quot;1&quot;),
-        false =&gt; print!(&quot;0&quot;),
-    }
-
-    match '?'.is_reference() {
-        true =&gt; print!(&quot;1&quot;),
-        false =&gt; {
-            impl Trait for char {
-                fn is_reference(self) -&gt; bool {
-                    false
-                }
-            }
-            print!(&quot;0&quot;)
+    match (1, 2) {
+        (x, _) | (_, x) if check(x) =&gt; {
+            print!(&quot;3&quot;)
         }
+        _ =&gt; print!(&quot;4&quot;),
     }
 }
 </code></pre>
 <h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>这里如果0.is_reference没有找到对应的方法的话，编译器会自动加上继续寻找</p>
-<pre><code>match 0.is_reference() {
-    true =&gt; print!(&quot;1&quot;),
-    false =&gt; print!(&quot;0&quot;),
+<p>参看<a href="https://doc.rust-lang.org/reference/expressions/match-expr.html#match-guards">match guard</a><br><br>
+上面这题的匹配过程：<br>
+Rust match 匹配到 <mark>(x , _)</mark> ，此时x = 1, 然后执行 if 判断，check(x) 输出 1 , 返回false , Rust 继续匹配，匹配到 <mark>( _ , x)</mark>， 此时x = 2，再次执行 if 判断语句，返回false。继续匹配下面一条，因为 _ 是通配符，所以输出4<br><br>
+流程如下图：<br>
+<img src="https://jgl666.github.io/post-images/1593701933236.PNG" alt="" loading="lazy"><br>
+<br></p>
+<h2 id="拓展">拓展</h2>
+<p>改为true 输出1 3</p>
+<pre><code>fn check(x: i32) -&gt; bool {
+    print!(&quot;{}&quot;, x);
+    true
+}
+
+fn main() {
+    match (1, 2) {
+        (x, _) | (_, x) if check(x) =&gt; {
+            print!(&quot;3&quot;)
+        }
+        _ =&gt; print!(&quot;4&quot;),
+    }
 }
 </code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>impl在整个程序中都是可见的，而不仅仅是在包含impl的块中。</p>
-<pre><code>    match '?'.is_reference() {
-        true =&gt; print!(&quot;1&quot;),
-        false =&gt; {
-            impl Trait for char {
-                fn is_reference(self) -&gt; bool {
-                    false
-                }
-            }
-            print!(&quot;0&quot;)
-        }
-    }
-</code></pre>
-<h2 id="rust相关知识">Rust相关知识</h2>
-<p><a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html">方法调用表达式</a></p>
-<blockquote>
-<p>The first step is to build a list of candidate receiver types. Obtain these by repeatedly dereferencing the receiver expression's type, adding each type encountered to the list, then finally attempting an unsized coercion at the end, and adding the result type if that is successful. Then, for each candidate T, add &amp;T and &amp;mut T to the list immediately after T.</p>
-<p>For instance, if the receiver has type Box&lt;[i32;2]&gt;, then the candidate types will be Box&lt;[i32;2]&gt;, &amp;Box&lt;[i32;2]&gt;, &amp;mut Box&lt;[i32;2]&gt;, [i32; 2] (by dereferencing), &amp;[i32; 2], &amp;mut [i32; 2], [i32] (by unsized coercion), &amp;[i32], and finally &amp;mut [i32].</p>
-</blockquote>
-<p>Rust在调用方法的时候，<mark>通过重复解除对接收方表达式的类型的引用，将遇到的每种类型添加到列表中来获取这些值。</mark> 然后，对于每个候选T，添加&amp;T和&amp;mut到紧接在T之后的列表中。</p>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/rustquiz13/">
+                <a href="https://jgl666.github.io/post/s/">
                   <h3 class="post-title">
-                     quiz阅读笔记系列13
+                     quiz阅读笔记系列20
                   </h3>
                 </a>
               </div>
