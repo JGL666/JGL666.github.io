@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-02T14:59:38.675Z</updated>
+    <updated>2020-07-04T07:21:38.292Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,87 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列31]]></title>
+        <id>https://jgl666.github.io/post/xxafaba/</id>
+        <link href="https://jgl666.github.io/post/xxafaba/">
+        </link>
+        <updated>2020-07-04T07:21:05.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="原文链接"><a href="https://dtolnay.github.io/rust-quiz/31">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br><br>
+<a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html#method-call-expressions">相关文档</a></h2>
+<pre><code>trait Or {
+    fn f(self);
+}
+
+struct T;
+
+impl Or for &amp;T {
+    fn f(self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+impl Or for &amp;&amp;&amp;&amp;T {
+    fn f(self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+fn main() {
+    let t = T;
+    let wt = &amp;T;
+    let wwt = &amp;&amp;T;
+    let wwwt = &amp;&amp;&amp;T;
+    let wwwwt = &amp;&amp;&amp;&amp;T;
+    let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
+    t.f();
+    wt.f();
+    wwt.f();
+    wwwt.f();
+    wwwwt.f();
+    wwwwwt.f();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>尝试寻找T对应的f方法，没有找到，然后给T加上&amp;，找到对应的方法</p>
+<pre><code>let t = T;
+t.f();
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>直接找到对应的类型&amp;T</p>
+<pre><code>let wt = &amp;T;
+wt.f();
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;T,没找到,加上&amp;,还是没有，然后解引用，找到&amp;T</p>
+<pre><code>let wwt = &amp;&amp;T;
+wwt.f();
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,找到 &amp;&amp;&amp;&amp;T</p>
+<pre><code>let wwwt = &amp;&amp;&amp;T;
+wwwt.f();
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,没找到,解引用找到</p>
+<pre><code>let wwwwt = &amp;&amp;&amp;&amp;T;
+wwwwt.f();
+</code></pre>
+<h4 id="no6">NO.6</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;&amp;&amp;T,没找到,加上&amp;, 没找到,解引用找到</p>
+<pre><code>let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
+wwwwwt.f();
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列32]]></title>
         <id>https://jgl666.github.io/post/xx/</id>
@@ -656,135 +737,6 @@ fn main() {
 <pre><code>&lt;Type as Trait&gt;::function(receiver_if_method, next_arg, ...);
 </code></pre>
 <p>可以在调用函数或方法的任何地方使用完全限定语法。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列5]]></title>
-        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-10/</id>
-        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-10/">
-        </link>
-        <updated>2020-06-28T13:58:28.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/5">原文链接</a></p>
-<pre><code>trait Trait {
-    fn p(self);
-}
-
-impl&lt;T&gt; Trait for fn(T) {
-    fn p(self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl&lt;T&gt; Trait for fn(&amp;T) {
-    fn p(self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn f(_: u8) {}
-fn g(_: &amp;u8) {}
-
-fn main() {
-    let a: fn(_) = f;
-    let b: fn(_) = g;
-    let c: fn(&amp;_) = g;
-    a.p();
-    b.p();
-    c.p();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>这里的T是泛型参数，编译的时候会转成具体的类型</p>
-<pre><code>impl&lt;T&gt; Trait for fn(T) {
-    fn p(self) {
-        print!(&quot;1&quot;);
-    }
-}
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>这里涉及到对T的引用，实际是有生命周期参数</p>
-<pre><code>impl&lt;T&gt; Trait for fn(&amp;T) {
-    fn p(self) {
-        print!(&quot;2&quot;);
-    }
-}
-</code></pre>
-<p>相当于</p>
-<pre><code>impl&lt;T&gt; Trait for for&lt;'a&gt; fn(&amp;'a T) {
-    fn p(self) {
-        print!(&quot;2&quot;);
-    }
-}
-</code></pre>
-<p>表示T对应具体类型的时候，生命周期要比'a更长。</p>
-<h4 id="no3">NO.3</h4>
-<hr>
-<pre><code>let a: fn(_) = f;
-</code></pre>
-<p>相当于</p>
-<pre><code>let a: fn(u8) = f;
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<hr>
-<pre><code>let b: fn(_) = g;
-</code></pre>
-<p>相当于</p>
-<pre><code>let b: fn(&amp;'x u8) = g;
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<hr>
-<pre><code>let c: fn(&amp;_) = g;
-</code></pre>
-<p>相当于</p>
-<pre><code>let c: for&lt;'a&gt; fn(&amp;'a u8) = g;
-</code></pre>
-<br>
-<h2 id="rust中相关知识">Rust中相关知识</h2>
-<h3 id="hrtb">HRTB</h3>
-<hr>
-<p><a href="https://stackoverflow.com/questions/35592750/how-does-for-syntax-differ-from-a-regular-lifetime-bound">参考</a><br><br><br>
-<a href="https://doc.rust-lang.org/nightly/nomicon/hrtb.html#higher-rank-trait-bounds-hrtbs">HRTBs</a>是Rust中一种特殊的语法。主要用在闭包上面，用来控制闭包的生命周期。<br><br>
-<br></p>
-<p>下面这段代码编译会失败，</p>
-<pre><code>fn show&lt;'a, F&gt;(f:F) where F:Fn(&amp;'a i32)-&gt;&amp;i32{
-    let v = 1;
-    f(&amp;v);
-}
-</code></pre>
-<p>img<br>
-如上图所示，局部变量v的生命周期比'a要短，此时借用方的生命周期长度大于出借方，编译器报错。其实这个时候闭包还没执行，无法判断具体的生命周期参数规则（包括参数、返回值等等）。<mark>所以需要在调用的时候再判断生命周期参数</mark>。<br><br>
-<br><br>
-这个时候HRTBS就登场了</p>
-<pre><code>fn show&lt;F&gt;(f:F) where F:for&lt;'a&gt; Fn(&amp;'a i32)-&gt;&amp;i32{
-    let v = 1;
-    f(&amp;v);
-}
-</code></pre>
-<p>它告诉编译器，<mark>等在闭包调用的地方才检查生命周期规则，而不是定义的时候。因为闭包不一定引用参数作为返回值，需要根据具体调用者上下文判断。</mark></p>
-<pre><code>fn filter&lt;F&gt;(self, f: F) -&gt; Option&lt;T&gt; where F: for&lt;'a&gt; FnOnce(&amp;'a T) -&gt; bool
-</code></pre>
-<br>
-<h3 id="题目分析">题目分析</h3>
-<hr>
-<p>题目中</p>
-<pre><code>fn g(_: &amp;u8) {}
-</code></pre>
-<p>应用了生命周期省略规则，实际展开应该是</p>
-<pre><code>fn g&lt;'x&gt;(_: &amp;'x u8) {}
-</code></pre>
-<p>解析：</p>
-<pre><code>let b: fn(_) = g;
-    =&gt;let b:fn(_) = fn&lt;'a&gt;(_:&amp;'x u8)
-        =&gt; _ = &amp;'x u8
-</code></pre>
-<br>
-<p>题目中</p>
-<pre><code>let c: fn(&amp;_) = g;
-//_ 替换为u8 , &amp;后面的生命周期未知，为延迟绑定。匹配for&lt;'a&gt; fn(&amp;'a x)
-</code></pre>
 ]]></content>
     </entry>
 </feed>
