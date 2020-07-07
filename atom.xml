@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-07T09:12:12.156Z</updated>
+    <updated>2020-07-07T09:13:19.987Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,39 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列16和17]]></title>
+        <id>https://jgl666.github.io/post/sssss/</id>
+        <link href="https://jgl666.github.io/post/sssss/">
+        </link>
+        <updated>2020-07-07T09:12:45.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/16">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<h2 id="16">16</h2>
+<pre><code>fn main() {
+    let mut x = 4;
+    --x;
+    print!(&quot;{}{}&quot;, --x, --x);
+}
+</code></pre>
+<p>相当于</p>
+<pre><code>print!(&quot;{}{}&quot;, -(-x), -(-x));
+</code></pre>
+<h2 id="17">17</h2>
+<p>Rust中没有--</p>
+<pre><code>fn main() {
+    let mut a = 5;
+    let mut b = 3;
+    print!(&quot;{}&quot;, a-- - --b);
+}
+</code></pre>
+<p>上面相当于</p>
+<pre><code>    let mut a = 5;
+    let mut b = 3;
+    print!(&quot;{}&quot;, a-(-(-(-(-b)))));
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[ quiz阅读笔记系列23]]></title>
         <id>https://jgl666.github.io/post/ssss/</id>
@@ -722,117 +755,6 @@ fn main() {
 <li>数据类型上的生命周期绑定都是早绑定，除非显示使用HRTB的for语法</li>
 <li>函数上生命周期绑定默认为迟绑定，除非函数签名外声明的生命周期，或者绑定到其它生命周期必须更长。</li>
 </ul>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列10]]></title>
-        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-11/</id>
-        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-11/">
-        </link>
-        <updated>2020-06-29T08:25:15.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/10">原文链接</a></p>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-}
-
-impl&lt;'a&gt; dyn Trait + 'a {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl Trait for bool {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    Trait::f(&amp;true);
-    Trait::f(&amp;true as &amp;dyn Trait);
-    &lt;_ as Trait&gt;::f(&amp;true);
-    &lt;_ as Trait&gt;::f(&amp;true as &amp;dyn Trait);
-    &lt;bool as Trait&gt;::f(&amp;true);
-}
-</code></pre>
-<br>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>调用Trait这个trait 为bool类型实现的f方法</p>
-<pre><code>Trait::f(&amp;true);
-</code></pre>
-<br>
-示例如下
-<pre><code>trait Trait1{
-    fn do_something(&amp;self);
-}
-
-trait Trait2{
-    fn do_something(&amp;self);
-}
-
-struct S;
-impl Trait1 for S{
-    fn do_something(&amp;self){
-        println!(&quot;Trait1&quot;);
-    }
-}
-
-impl Trait2 for S{
-    fn do_something(&amp;self){
-        println!(&quot;Trait2&quot;);
-    }
-}
-
-
-fn main() {
-    //Trait1
-    Trait1::do_something(&amp;S);
-    //Trait2
-    Trait2::do_something(&amp;S);
-}
-</code></pre>
-<br>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>trait 对象内置的方法会被具体类型实现的方法遮蔽</p>
-<pre><code>Trait::f(&amp;true as &amp;dyn Trait);
-</code></pre>
-<br>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p><a href="https://jgl666.github.io/post/xiao-chu-qi-yi-de-wan-quan-xian-ding-yu-fa/">消除歧义的完全限定语法</a>用来调用trait内部的关联函数或者调用指定trait实现的方法。</p>
-<pre><code>&lt;_ as Trait&gt;::f(&amp;true);
-//内部方法被遮蔽
-&lt;_ as Trait&gt;::f(&amp;true as &amp;dyn Trait);
-</code></pre>
-<p>示例如下：</p>
-<pre><code>trait Trait1{
-    fn do_something(){
-        println!(&quot;trait 1 do something&quot;)
-    }
-}
-
-
-struct S;
-impl Trait1 for S{}
-impl S{
-    fn do_something(){
-        println!(&quot;S do something&quot;)
-    }
-}
-fn main() {
-    S::do_something();
-    &lt;S as Trait1&gt;::do_something();
-}
-</code></pre>
-<br>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>同上</p>
-<pre><code>&lt;bool as Trait&gt;::f(&amp;true);
-</code></pre>
 ]]></content>
     </entry>
 </feed>

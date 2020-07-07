@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列32 | JGL</title>
+<title>JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -18,17 +18,8 @@
 
 
 
-    <meta name="description" content="原文链接
-Rust Quiz 解读汇总
-
-fn check(x: i32) -&gt; bool {
-    print!(&quot;{}&quot;, x);
-    false
-}
-
-fn main() {
-    match (1,..." />
-    <meta name="keywords" content="" />
+    <meta name="description" content="温故而知新">
+    
   </head>
   <body>
     <div id="app" class="main">
@@ -98,68 +89,29 @@ fn main() {
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列32</h2>
-            <div class="post-date">2020-07-02</div>
-            
-            <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/32">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<hr>
-<pre><code>fn check(x: i32) -&gt; bool {
-    print!(&quot;{}&quot;, x);
-    false
-}
-
-fn main() {
-    match (1, 2) {
-        (x, _) | (_, x) if check(x) =&gt; {
-            print!(&quot;3&quot;)
-        }
-        _ =&gt; print!(&quot;4&quot;),
-    }
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>参看<a href="https://doc.rust-lang.org/reference/expressions/match-expr.html#match-guards">match guard</a><br><br>
-上面这题的匹配过程：<br>
-Rust match 匹配到 <mark>(x , _)</mark> ，此时x = 1, 然后执行 if 判断，check(x) 输出 1 , 返回false , Rust 继续匹配，匹配到 <mark>( _ , x)</mark>， 此时x = 2，再次执行 if 判断语句，返回false。继续匹配下面一条，因为 _ 是通配符，所以输出4<br><br>
-流程如下图：<br>
-<img src="https://jgl666.github.io/post-images/1593701933236.PNG" alt="" loading="lazy"><br>
-<br></p>
-<h2 id="拓展">拓展</h2>
-<p>改为true 输出1 3</p>
-<pre><code>fn check(x: i32) -&gt; bool {
-    print!(&quot;{}&quot;, x);
-    true
-}
-
-fn main() {
-    match (1, 2) {
-        (x, _) | (_, x) if check(x) =&gt; {
-            print!(&quot;3&quot;)
-        }
-        _ =&gt; print!(&quot;4&quot;),
-    }
-}
-</code></pre>
-
-            </div>
-            
-            
-              <div class="next-post">
-                <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/s/">
-                  <h3 class="post-title">
-                     quiz阅读笔记系列20
-                  </h3>
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-1/">
+                  <h2 class="post-title">quiz阅读笔记系列1</h2>
                 </a>
+                <div class="post-date">
+                  2020-06-26
+                </div>
+                <div class="post-abstract">
+                  
+                </div>
               </div>
-            
+              
+            </article>
+          
 
-            
-
-          </div>
+          <div class="pagination-container">
+  
+    <a href="https://jgl666.github.io/page/2/" class="prev"><i class="icon-arrow-ios-back-outline"></i> 上一页</a>
+  
+  
+</div>
 
         </div>
       </div>

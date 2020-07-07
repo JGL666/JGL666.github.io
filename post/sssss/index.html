@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列31 | JGL</title>
+<title>quiz阅读笔记系列16和17 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -20,16 +20,15 @@
 
     <meta name="description" content="原文链接
 Rust Quiz 解读汇总
-相关文档
-trait Or {
-    fn f(self);
+16
+fn main() {
+    let mut x = 4;
+    --x;
+    print!(&quot;{}{}&quot;, --x, --x);
 }
 
-struct T;
-
-impl Or for &amp;T {
-    fn f(self) {
-        print!(&..." />
+相当于
+print!(&qu..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -101,82 +100,34 @@ impl Or for &amp;T {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列31</h2>
-            <div class="post-date">2020-07-04</div>
+            <h2 class="post-title">quiz阅读笔记系列16和17</h2>
+            <div class="post-date">2020-07-07</div>
             
             <div class="post-content" v-pre>
-              <h2 id="原文链接"><a href="https://dtolnay.github.io/rust-quiz/31">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br><br>
-<a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html#method-call-expressions">相关文档</a></h2>
-<pre><code>trait Or {
-    fn f(self);
-}
-
-struct T;
-
-impl Or for &amp;T {
-    fn f(self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl Or for &amp;&amp;&amp;&amp;T {
-    fn f(self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    let t = T;
-    let wt = &amp;T;
-    let wwt = &amp;&amp;T;
-    let wwwt = &amp;&amp;&amp;T;
-    let wwwwt = &amp;&amp;&amp;&amp;T;
-    let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
-    t.f();
-    wt.f();
-    wwt.f();
-    wwwt.f();
-    wwwwt.f();
-    wwwwwt.f();
+              <p><a href="https://dtolnay.github.io/rust-quiz/16">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<h2 id="16">16</h2>
+<pre><code>fn main() {
+    let mut x = 4;
+    --x;
+    print!(&quot;{}{}&quot;, --x, --x);
 }
 </code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>尝试寻找T对应的f方法，没有找到，然后给T加上&amp;，找到对应的方法</p>
-<pre><code>let t = T;
-t.f();
+<p>相当于</p>
+<pre><code>print!(&quot;{}{}&quot;, -(-x), -(-x));
 </code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>直接找到对应的类型&amp;T</p>
-<pre><code>let wt = &amp;T;
-wt.f();
+<h2 id="17">17</h2>
+<p>Rust中没有--</p>
+<pre><code>fn main() {
+    let mut a = 5;
+    let mut b = 3;
+    print!(&quot;{}&quot;, a-- - --b);
+}
 </code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;T,没找到,加上&amp;,还是没有，然后解引用，找到&amp;T</p>
-<pre><code>let wwt = &amp;&amp;T;
-wwt.f();
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,找到 &amp;&amp;&amp;&amp;T</p>
-<pre><code>let wwwt = &amp;&amp;&amp;T;
-wwwt.f();
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,没找到,解引用找到</p>
-<pre><code>let wwwwt = &amp;&amp;&amp;&amp;T;
-wwwwt.f();
-</code></pre>
-<h4 id="no6">NO.6</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;&amp;&amp;&amp;T,没找到,加上&amp;, 没找到,解引用找到</p>
-<pre><code>let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
-wwwwwt.f();
+<p>上面相当于</p>
+<pre><code>    let mut a = 5;
+    let mut b = 3;
+    print!(&quot;{}&quot;, a-(-(-(-(-b)))));
 </code></pre>
 
             </div>
@@ -184,9 +135,9 @@ wwwwwt.f();
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/xx/">
+                <a href="https://jgl666.github.io/post/ssss/">
                   <h3 class="post-title">
-                    quiz阅读笔记系列32
+                     quiz阅读笔记系列23
                   </h3>
                 </a>
               </div>
