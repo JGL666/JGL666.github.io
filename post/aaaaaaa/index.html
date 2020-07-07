@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列1 | JGL</title>
+<title> quiz阅读笔记系列22 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -19,14 +19,11 @@
 
 
     <meta name="description" content="原文链接
-参考
-问题
+Rust Quiz 解读汇总
+
 macro_rules! m {
-    ($($s:stmt)*) =&gt; {
-        $(
-            { stringify!($s); 1 }
-        )&lt;&lt;*
-  ..." />
+    ($a:tt) =&gt; { print!(&quot;1&quot;) };
+    ($a:tt $b:tt) =&gt; { print!(&quo..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -98,86 +95,45 @@ macro_rules! m {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列1</h2>
-            <div class="post-date">2020-06-26</div>
+            <h2 class="post-title"> quiz阅读笔记系列22</h2>
+            <div class="post-date">2020-07-07</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/1">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<h2 id="问题">问题</h2>
+              <p><a href="https://dtolnay.github.io/rust-quiz/22">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
 <pre><code>macro_rules! m {
-    ($($s:stmt)*) =&gt; {
-        $(
-            { stringify!($s); 1 }
-        )&lt;&lt;*
-    };
+    ($a:tt) =&gt; { print!(&quot;1&quot;) };
+    ($a:tt $b:tt) =&gt; { print!(&quot;2&quot;) };
+    ($a:tt $b:tt $c:tt) =&gt; { print!(&quot;3&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt) =&gt; { print!(&quot;4&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt $e:tt) =&gt; { print!(&quot;5&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt $e:tt $f:tt) =&gt; { print!(&quot;6&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt $e:tt $f:tt $g:tt) =&gt; { print!(&quot;7&quot;) };
 }
 
 fn main() {
-    print!(
-        &quot;{}{}{}&quot;,
-        m! { return || true },
-        m! { (return) || true },
-        m! { {return} || true },
-    );
+    m!(-1);
+    m!(-1.);
+    m!(-1.0);
+    m!(-1.0e1);
+    m!(-1.0e-1);
 }
 </code></pre>
-<br>
 <h2 id="解析">解析</h2>
-<h4 id="no1">NO1</h4>
-<hr>
-<p>表示匹配一个或者多个Rust语句</p>
-<pre><code>($($s:stmt)*)
-</code></pre>
-<p>这是Rust匹配宏规则，stmt表示语句</p>
-<pre><code>$s:stmt
-</code></pre>
-<h4 id="no2">NO2</h4>
-<hr>
-<p>Rust在宏中引用$s，表示引用匹配的变量。<br><br>
-stringify!将引用的token转为字符串</p>
-<pre><code>{ stringify!($s); 1 }
-</code></pre>
-<h4 id="no3">NO3</h4>
-<hr>
-<p>return || true 是一个表达式语句 返回一个闭包</p>
-<pre><code> m! { return || true }
-</code></pre>
-<p>如下代码一样</p>
-<pre><code>fn main() {
-    fn get_f()-&gt;fn()-&gt;bool{
-        return || true;
-    }
-    let f: fn()-&gt;bool = get_f();
-    //true
-    println!(&quot;{}&quot;,f());
-}
-</code></pre>
-<h4 id="no4">NO4</h4>
-<hr>
-<p>(return) || true 是一个逻辑或表达式语句<br><br>
-这里面都是表达式，整体作为一个表达式语句</p>
-<pre><code> m! { (return) || true }
-</code></pre>
-<h4 id="no5">NO5</h4>
-<hr>
-<p>左边是一个块表达式语句，右边是一个闭包表达式语句<br><br>
-这是两个语句</p>
-<pre><code>m! { {return} || true }
-</code></pre>
-<br>
-<h2 id="rust相关知识点">Rust相关知识点</h2>
-<ul>
-<li>Rust中的语句<br><br>
-<a href="https://doc.rust-lang.org/reference/statements.html">官方文档</a><br><br>
-<img src="https://jgl666.github.io/post-images/1593149001372.PNG" alt="" loading="lazy"><br>
-<a href="https://doc.rust-lang.org/reference/items.html">Item</a>是包的组件，包括模块、函数、结构体等等。<br><br>
-块表达式语句可以没有分号，例如{}或者unsafe{}都是块表达式语句。<br><br>
-()是<a href="https://doc.rust-lang.org/reference/expressions/grouped-expr.html">分组表达式</a>，返回分组计算的结果。</li>
-</ul>
+<p>Rust中将-理解为单独的符号，小数点以及后面的e都是一个符号。</p>
 
             </div>
             
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://jgl666.github.io/post/ccc/">
+                  <h3 class="post-title">
+                     quiz阅读笔记系列21
+                  </h3>
+                </a>
+              </div>
             
 
             

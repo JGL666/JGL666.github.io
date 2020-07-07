@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title> quiz阅读笔记系列12 | JGL</title>
+<title>quiz阅读笔记系列23 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -20,11 +20,16 @@
 
     <meta name="description" content="原文链接
 Rust Quiz 解读汇总
-struct D(u8);
 
-impl Drop for D {
-    fn drop(&amp;mut self) {
-        print!(&quot;{}&quot;, self.0)..." />
+trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+impl S {
+    fn f(&amp;self) ..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -96,58 +101,187 @@ impl Drop for D {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title"> quiz阅读笔记系列12</h2>
-            <div class="post-date">2020-06-29</div>
+            <h2 class="post-title">quiz阅读笔记系列23</h2>
+            <div class="post-date">2020-07-07</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/12">原文链接</a><br><br>
+              <p><a href="https://dtolnay.github.io/rust-quiz/23">原文链接</a><br><br>
 <a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>struct D(u8);
+<hr>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
 
-impl Drop for D {
-    fn drop(&amp;mut self) {
-        print!(&quot;{}&quot;, self.0);
+struct S;
+
+impl S {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+
+    fn g(&amp;mut self) {
+        print!(&quot;1&quot;);
     }
 }
 
-struct S {
-    d: D,
-    x: u8,
+impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
 }
 
 fn main() {
-    let S { x, .. } = S {
-        d: D(1),
-        x: 2,
-    };
-    print!(&quot;{}&quot;, x);
-
-    let S { ref x, .. } = S {
-        d: D(3),
-        x: 4,
-    };
-    print!(&quot;{}&quot;, x);
+    S.f();
+    S.g();
 }
 </code></pre>
 <h2 id="解析">解析</h2>
 <h4 id="no1">NO.1</h4>
 <hr>
-<p>生成了临时变量S_temp, 然后采用模式匹配，这里x是值拷贝。<br>
-S会立马析构，输出12</p>
-<pre><code>    let S { x, .. } = S {
-        d: D(1),
-        x: 2,
-    };
-    print!(&quot;{}&quot;, x);
+<p>如果结构体方法和trait中方法重名，默认调用结构体自身的方法。可以使用消除歧义的语法调用trait中的方法。</p>
+<pre><code>&lt;S as Trait&gt;::f(&amp;S);
 </code></pre>
-<h4 id="no2">NO.2</h4>
+<p>NO.2</p>
 <hr>
-<p>这里x是对临时变量内部字段的引用，临时变量还不能释放，不然会造成悬垂指针。</p>
-<pre><code>let S { ref x, .. } = S {
-    d: D(3),
-    x: 4,
-};
-print!(&quot;{}&quot;, x);
+<p>S找不到方法，会添加引用，找到Trait中定义的方法</p>
+<pre><code>fn g(&amp;self) {
+    print!(&quot;2&quot;);
+}
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>如果还是找不到就加上&amp;mut<br>
+这里注释掉，输出11</p>
+<pre><code>impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>增加新的Trait1，输出33，因为直接匹配到方法中接受类型就是S</p>
+<pre><code>trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<p>这样也可以，输出1，3</p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+impl S {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+
+    fn g(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+// impl Trait for S {
+//     fn f(&amp;self) {
+//         print!(&quot;2&quot;);
+//     }
+//
+//     fn g(&amp;self) {
+//         print!(&quot;2&quot;);
+//     }
+// }
+
+trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for &amp;S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+fn main() {
+    S.f();
+    S.g();
+}
+</code></pre>
+<h4 id="no5-2">NO.5</h4>
+<hr>
+<p>这里输出33，没找到先解引用</p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+// impl S {
+//     fn f(&amp;self) {
+//         print!(&quot;1&quot;);
+//     }
+//
+//     fn g(&amp;mut self) {
+//         print!(&quot;1&quot;);
+//     }
+// }
+
+impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+fn main() {
+    &amp;S.f();
+    &amp;S.g();
+}
 </code></pre>
 
             </div>
@@ -155,9 +289,9 @@ print!(&quot;{}&quot;, x);
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-12/">
+                <a href="https://jgl666.github.io/post/aaaaaaa/">
                   <h3 class="post-title">
-                     quiz阅读笔记系列11
+                     quiz阅读笔记系列22
                   </h3>
                 </a>
               </div>

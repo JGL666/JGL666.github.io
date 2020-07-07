@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-07T09:41:00.357Z</updated>
+    <updated>2020-07-07T09:43:49.653Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,255 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列24]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-24/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-24/">
+        </link>
+        <updated>2020-07-07T09:43:14.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/21">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>fn main() {
+    let x: u8 = 1;
+    const K: u8 = 2;
+
+    macro_rules! m {
+        () =&gt; {
+            print!(&quot;{}{}&quot;, x, K);
+        };
+    }
+
+    {
+        let x: u8 = 3;
+        const K: u8 = 4;
+
+        m!();
+    }
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>Rust宏是部分卫生的，参看<a href="https://danielkeep.github.io/tlborm/book/mbe-min-hygiene.html">卫生宏</a><br><br>
+本题中宏中x先被替换为1，后面括号内的x不会影响宏中的x。const 在Rust中一个Item，不是本地变量，在出现K的地方会被替换为对应的值。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列23]]></title>
+        <id>https://jgl666.github.io/post/jjjj/</id>
+        <link href="https://jgl666.github.io/post/jjjj/">
+        </link>
+        <updated>2020-07-07T09:41:49.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/23">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+impl S {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+
+    fn g(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+fn main() {
+    S.f();
+    S.g();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>如果结构体方法和trait中方法重名，默认调用结构体自身的方法。可以使用消除歧义的语法调用trait中的方法。</p>
+<pre><code>&lt;S as Trait&gt;::f(&amp;S);
+</code></pre>
+<p>NO.2</p>
+<hr>
+<p>S找不到方法，会添加引用，找到Trait中定义的方法</p>
+<pre><code>fn g(&amp;self) {
+    print!(&quot;2&quot;);
+}
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>如果还是找不到就加上&amp;mut<br>
+这里注释掉，输出11</p>
+<pre><code>impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>增加新的Trait1，输出33，因为直接匹配到方法中接受类型就是S</p>
+<pre><code>trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<p>这样也可以，输出1，3</p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+impl S {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+
+    fn g(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+// impl Trait for S {
+//     fn f(&amp;self) {
+//         print!(&quot;2&quot;);
+//     }
+//
+//     fn g(&amp;self) {
+//         print!(&quot;2&quot;);
+//     }
+// }
+
+trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for &amp;S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+fn main() {
+    S.f();
+    S.g();
+}
+</code></pre>
+<h4 id="no5-2">NO.5</h4>
+<hr>
+<p>这里输出33，没找到先解引用</p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+// impl S {
+//     fn f(&amp;self) {
+//         print!(&quot;1&quot;);
+//     }
+//
+//     fn g(&amp;mut self) {
+//         print!(&quot;1&quot;);
+//     }
+// }
+
+impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+fn main() {
+    &amp;S.f();
+    &amp;S.g();
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列22]]></title>
+        <id>https://jgl666.github.io/post/aaaaaaa/</id>
+        <link href="https://jgl666.github.io/post/aaaaaaa/">
+        </link>
+        <updated>2020-07-07T09:41:13.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/22">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>macro_rules! m {
+    ($a:tt) =&gt; { print!(&quot;1&quot;) };
+    ($a:tt $b:tt) =&gt; { print!(&quot;2&quot;) };
+    ($a:tt $b:tt $c:tt) =&gt; { print!(&quot;3&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt) =&gt; { print!(&quot;4&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt $e:tt) =&gt; { print!(&quot;5&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt $e:tt $f:tt) =&gt; { print!(&quot;6&quot;) };
+    ($a:tt $b:tt $c:tt $d:tt $e:tt $f:tt $g:tt) =&gt; { print!(&quot;7&quot;) };
+}
+
+fn main() {
+    m!(-1);
+    m!(-1.);
+    m!(-1.0);
+    m!(-1.0e1);
+    m!(-1.0e-1);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>Rust中将-理解为单独的符号，小数点以及后面的e都是一个符号。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[ quiz阅读笔记系列21]]></title>
         <id>https://jgl666.github.io/post/ccc/</id>
@@ -559,242 +808,6 @@ wwwwt.f();
 <pre><code>let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
 wwwwwt.f();
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列32]]></title>
-        <id>https://jgl666.github.io/post/xx/</id>
-        <link href="https://jgl666.github.io/post/xx/">
-        </link>
-        <updated>2020-07-02T14:58:41.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/32">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<hr>
-<pre><code>fn check(x: i32) -&gt; bool {
-    print!(&quot;{}&quot;, x);
-    false
-}
-
-fn main() {
-    match (1, 2) {
-        (x, _) | (_, x) if check(x) =&gt; {
-            print!(&quot;3&quot;)
-        }
-        _ =&gt; print!(&quot;4&quot;),
-    }
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>参看<a href="https://doc.rust-lang.org/reference/expressions/match-expr.html#match-guards">match guard</a><br><br>
-上面这题的匹配过程：<br>
-Rust match 匹配到 <mark>(x , _)</mark> ，此时x = 1, 然后执行 if 判断，check(x) 输出 1 , 返回false , Rust 继续匹配，匹配到 <mark>( _ , x)</mark>， 此时x = 2，再次执行 if 判断语句，返回false。继续匹配下面一条，因为 _ 是通配符，所以输出4<br><br>
-流程如下图：<br>
-<img src="https://jgl666.github.io/post-images/1593701933236.PNG" alt="" loading="lazy"><br>
-<br></p>
-<h2 id="拓展">拓展</h2>
-<p>改为true 输出1 3</p>
-<pre><code>fn check(x: i32) -&gt; bool {
-    print!(&quot;{}&quot;, x);
-    true
-}
-
-fn main() {
-    match (1, 2) {
-        (x, _) | (_, x) if check(x) =&gt; {
-            print!(&quot;3&quot;)
-        }
-        _ =&gt; print!(&quot;4&quot;),
-    }
-}
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列20]]></title>
-        <id>https://jgl666.github.io/post/s/</id>
-        <link href="https://jgl666.github.io/post/s/">
-        </link>
-        <updated>2020-07-02T05:04:42.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/15">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>fn return1() {
-    if (return { print!(&quot;1&quot;) }) {
-    }
-}
-
-fn return2() {
-    if return { print!(&quot;2&quot;) } {
-    }
-}
-
-fn break1() {
-    loop {
-        if (break { print!(&quot;1&quot;) }) {
-        }
-    }
-}
-
-fn break2() {
-    loop {
-        if break { print!(&quot;2&quot;) } {
-        }
-    }
-}
-
-fn main() {
-    return1();
-    return2();
-    break1();
-    break2();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>参照<a href="https://doc.rust-lang.org/reference/expressions.html#expression-precedence">表达式优先级</a><br></p>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>return 总是优化处理后面的表达式</p>
-<pre><code>fn return1() {
-    if (return { print!(&quot;1&quot;) }) {
-    }
-}
-
-fn return2() {
-    if return { print!(&quot;2&quot;) } {
-    }
-}
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>() 优先级大于break，先计算括号表达式，输出1</p>
-<pre><code>fn break1() {
-    loop {
-        if (break { print!(&quot;1&quot;) }) {
-        }
-    }
-}
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<pre><code>fn break2() {
-    loop {
-        if break { print!(&quot;2&quot;) } {
-        }
-    }
-}
-</code></pre>
-<p>和return 不一样，break不优先处理后面的表达式，上面的函数格式化如下。break在 {println!(&quot;2&quot;)} 之前就退出了。</p>
-<pre><code>fn break2() {
-    loop {
-        if break
-        { print!(&quot;2&quot;) }
-        {}
-    }
-}
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列15]]></title>
-        <id>https://jgl666.github.io/post/xxx/</id>
-        <link href="https://jgl666.github.io/post/xxx/">
-        </link>
-        <updated>2020-07-01T08:04:28.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/15">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-}
-
-impl Trait for u32 {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl&lt;'a&gt; Trait for &amp;'a i32 {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    let x = &amp;0;
-    x.f();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>原理详见<a href="https://stackoverflow.com/questions/28519997/what-are-rusts-exact-auto-dereferencing-rules/28552082#28552082">stackoverflow</a><br></p>
-<p>给出了方法解引用步骤</p>
-<blockquote>
-<p>The core of the algorithm is:</p>
-<p>For each &quot;dereference step&quot; U (that is, set U = T and then U = *T, ...)<br><br>
-1、if there's a method bar where the receiver type (the type of self in the method) matches U exactly , use it (a &quot;by value method&quot;)<br><br>
-2、otherwise, add one auto-ref (take &amp; or &amp;mut of the receiver), and, if some method's receiver matches &amp;U, use it (an &quot;autorefd method&quot;)</p>
-</blockquote>
-<p>对于上面这题两个trait 实现，这里u32和&amp;u32是两个类型。</p>
-<pre><code>impl Trait for u32 
-impl&lt;'a&gt; Trait for &amp;'a i32
-</code></pre>
-<p>现在应用上面的规则：<br><br>
-对于</p>
-<pre><code>let x = &amp;0;
-</code></pre>
-<p>此时U为&amp;x，完全匹配方法f的参数类型&amp;self。适用于第一条规则。</p>
-<pre><code>//等同于fn f(&amp;u32)
-fn f(&amp;self) {
-    print!(&quot;1&quot;);
-}
-</code></pre>
-<p>如果这个时候注释掉</p>
-<pre><code>impl Trait for u32 {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-}
-</code></pre>
-<p>此时第一条规则不成立，尝试第二条规则，给类型自动加引用。此时x的类型如下：</p>
-<pre><code>x: &amp;&amp;u32
-</code></pre>
-<p>因为针对&amp;u32有实现的trait</p>
-<pre><code>impl&lt;'a&gt; Trait for &amp;'a i32 {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-</code></pre>
-<p>此时self 为&amp; &amp;u32,而x为&amp; &amp;u32, 满足参数类型。所以输出2。</p>
-<h2 id="拓展">拓展</h2>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-}
-
-impl&lt;'a&gt; Trait for &amp;'a i32 {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-impl&lt;'a&gt; Trait for &amp;'a &amp;i32 {
-    fn f(&amp;self) {
-        print!(&quot;3&quot;);
-    }
-}
-
-fn main() {
-    let x = &amp;&amp;0;
-    x.f();
-}
-</code></pre>
-<p>上面代码输出2<br></p>
-<hr>
-<p>当注释掉</p>
-<pre><code>impl&lt;'a&gt; Trait for &amp;'a i32 {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-</code></pre>
-<p>输出3<br><br>
-原理同上</p>
 ]]></content>
     </entry>
 </feed>
