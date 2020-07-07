@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列8 | JGL</title>
+<title> quiz阅读笔记系列19 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -19,10 +19,16 @@
 
 
     <meta name="description" content="原文链接
-参考
-macro_rules! m {
-    (==&gt;) =&gt; { print!(&quot;1&quot;); };
-    (= = &gt;) =&gt; { print!(&quot;2&quot;); };..." />
+Rust Quiz 解读汇总
+struct S;
+
+impl Drop for S {
+    fn drop(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+fn..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -94,60 +100,62 @@ macro_rules! m {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列8</h2>
-            <div class="post-date">2020-06-26</div>
+            <h2 class="post-title"> quiz阅读笔记系列19</h2>
+            <div class="post-date">2020-07-07</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://dtolnay.github.io/rust-quiz/8">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>macro_rules! m {
-    (==&gt;) =&gt; { print!(&quot;1&quot;); };
-    (= = &gt;) =&gt; { print!(&quot;2&quot;); };
-    (== &gt;) =&gt; { print!(&quot;3&quot;); };
-    (= =&gt;) =&gt; { print!(&quot;4&quot;); };
+              <p><a href="https://dtolnay.github.io/rust-quiz/19">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>struct S;
+
+impl Drop for S {
+    fn drop(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
 }
 
 fn main() {
-    m!(==&gt;);
-    m!(= = &gt;);
-    m!(== &gt;);
-    m!(= =&gt;);
+    let s = S;
+    let _ = s;
+    print!(&quot;2&quot;);
 }
 </code></pre>
 <h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<pre><code> (==&gt;) =&gt; { print!(&quot;1&quot;); };
+<p>所有权发生转移</p>
+<pre><code>let s = S;
 </code></pre>
-<p>这个符号Rust中不存在，按照贪心算法，== 被分为一组，&gt;被分为一组</p>
-<pre><code>m!(==&gt;);
-m!(== &gt;);
+<p>所有权没有接收者，s会一直存在直到作用域结束</p>
+<pre><code> let _ = s;
 </code></pre>
-<p>这两个都会分组为（==） 和 (&gt;)</p>
-<h4 id="no2">NO.2</h4>
-<hr>
-<pre><code>m!(= = &gt;);
+<h4 id="拓展">拓展</h4>
+<p>输出112，因为所有权没有接收者，直接drop了</p>
+<pre><code>struct S;
+
+impl Drop for S {
+    fn drop(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+fn get()-&gt;S{
+    S
+}
+
+fn main() {
+    let _ = get();
+    let _ = S;
+    print!(&quot;2&quot;);
+}
 </code></pre>
-<p>没什么好说的，三个组分别是(=)、(=)、(&gt;)</p>
-<h4 id="no3">NO3</h4>
-<hr>
-<pre><code>(= =&gt;) =&gt; { print!(&quot;4&quot;); };
-</code></pre>
-<p>没什么好说的，三个组分别是=)、(=&gt;)</p>
-<h2 id="rust相关知识">Rust相关知识</h2>
-<p>标点符号在macro_rules宏中会根据Rust中标点符号分组。</p>
-<pre><code>=&lt;&lt;
-</code></pre>
-<p>Rust的宏将=&lt;&lt;分组，分组依据是Rust中<a href="https://doc.rust-lang.org/reference/tokens.html#punctuation">标点符号</a>，根据贪心算法先取=, 后面的&lt;&lt;，遇到&lt;是一个符号，&lt;&lt;也是一个符号，就将&lt;&lt; 作为一个符号分组</p>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-7/">
+                <a href="https://jgl666.github.io/post/sss/">
                   <h3 class="post-title">
-                     quiz阅读笔记系列7
+                    quiz阅读笔记系列18
                   </h3>
                 </a>
               </div>
