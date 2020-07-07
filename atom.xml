@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-04T07:21:38.292Z</updated>
+    <updated>2020-07-07T09:12:12.156Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,192 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列23]]></title>
+        <id>https://jgl666.github.io/post/ssss/</id>
+        <link href="https://jgl666.github.io/post/ssss/">
+        </link>
+        <updated>2020-07-07T09:11:41.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/23">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+impl S {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+
+    fn g(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+fn main() {
+    S.f();
+    S.g();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>如果结构体方法和trait中方法重名，默认调用结构体自身的方法。可以使用消除歧义的语法调用trait中的方法。</p>
+<pre><code>&lt;S as Trait&gt;::f(&amp;S);
+</code></pre>
+<p>NO.2</p>
+<hr>
+<p>S找不到方法，会添加引用，找到Trait中定义的方法</p>
+<pre><code>fn g(&amp;self) {
+    print!(&quot;2&quot;);
+}
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>如果还是找不到就加上&amp;mut<br>
+这里注释掉，输出11</p>
+<pre><code>impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>增加新的Trait1，输出33，因为直接匹配到方法中接受类型就是S</p>
+<pre><code>trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<p>这样也可以，输出1，3</p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+impl S {
+    fn f(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+
+    fn g(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+// impl Trait for S {
+//     fn f(&amp;self) {
+//         print!(&quot;2&quot;);
+//     }
+//
+//     fn g(&amp;self) {
+//         print!(&quot;2&quot;);
+//     }
+// }
+
+trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for &amp;S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+fn main() {
+    S.f();
+    S.g();
+}
+</code></pre>
+<h4 id="no5-2">NO.5</h4>
+<hr>
+<p>这里输出33，没找到先解引用</p>
+<pre><code>trait Trait {
+    fn f(&amp;self);
+    fn g(&amp;self);
+}
+
+struct S;
+
+// impl S {
+//     fn f(&amp;self) {
+//         print!(&quot;1&quot;);
+//     }
+//
+//     fn g(&amp;mut self) {
+//         print!(&quot;1&quot;);
+//     }
+// }
+
+impl Trait for S {
+    fn f(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+
+    fn g(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+trait Trait1{
+    fn f(self);
+    fn g(self);
+}
+
+impl Trait1 for S {
+    fn f(self) {
+        print!(&quot;3&quot;);
+    }
+
+    fn g(self) {
+        print!(&quot;3&quot;);
+    }
+}
+fn main() {
+    &amp;S.f();
+    &amp;S.g();
+}
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列31]]></title>
         <id>https://jgl666.github.io/post/xxafaba/</id>
@@ -647,96 +833,6 @@ fn main() {
 <p>同上</p>
 <pre><code>&lt;bool as Trait&gt;::f(&amp;true);
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[消除歧义的完全限定语法]]></title>
-        <id>https://jgl666.github.io/post/xiao-chu-qi-yi-de-wan-quan-xian-ding-yu-fa/</id>
-        <link href="https://jgl666.github.io/post/xiao-chu-qi-yi-de-wan-quan-xian-ding-yu-fa/">
-        </link>
-        <updated>2020-06-29T05:43:56.000Z</updated>
-        <content type="html"><![CDATA[<h4 id="消除歧义的完全限定语法">消除歧义的完全限定语法</h4>
-<hr>
-<p><a href="https://doc.rust-lang.org/book/ch19-03-advanced-traits.html#fully-qualified-syntax-for-disambiguation-calling-methods-with-the-same-name">链接</a><br><br><br>
-<strong>起因：</strong> 为同一种类型，实现不同的trait，这些trait中有同名的方法。同名的函数在调用的时候会产生歧义。</p>
-<p>如下</p>
-<pre><code>trait Pilot {
-    fn fly(&amp;self);
-}
-
-trait Wizard {
-    fn fly(&amp;self);
-}
-
-struct Human;
-
-impl Pilot for Human {
-    fn fly(&amp;self) {
-        println!(&quot;This is your captain speaking.&quot;);
-    }
-}
-
-impl Wizard for Human {
-    fn fly(&amp;self) {
-        println!(&quot;Up!&quot;);
-    }
-}
-
-impl Human {
-    fn fly(&amp;self) {
-        println!(&quot;*waving arms furiously*&quot;);
-    }
-}
-</code></pre>
-<p>上面的代码有三个重名的函数，类型自身的方法，以及 Pilot 和 Wizard 实现的方法。</p>
-<p>当使用Human类型的实例调用 fly 方法的时候，默认调用自身的方法。</p>
-<pre><code>fn main() {
-    let person = Human;
-    person.fly();
-}
-</code></pre>
-<p>为了调用 Pilot trait 或者 wizard trait，需要显示的语法指定。</p>
-<pre><code>fn main() {
-    let person = Human;
-    Pilot::fly(&amp;person);
-    Wizard::fly(&amp;person);
-    person.fly();
-}
-</code></pre>
-<p>关联函数没有self参数，如下。</p>
-<pre><code>trait Animal {
-    fn baby_name() -&gt; String;
-}
-
-struct Dog;
-
-impl Dog {
-    fn baby_name() -&gt; String {
-        String::from(&quot;Spot&quot;)
-    }
-}
-
-impl Animal for Dog {
-    fn baby_name() -&gt; String {
-        String::from(&quot;puppy&quot;)
-    }
-}
-
-fn main() {
-    println!(&quot;A baby dog is called a {}&quot;, Dog::baby_name());
-}
-</code></pre>
-<br>
-<p>Animal::baby_name是一个关联函数，而不是一个方法。它没有self参数，Rust不知道具体类型。<br>
-<br>为了消除歧义，采用如下调用</p>
-<pre><code>fn main() {
-    println!(&quot;A baby dog is called a {}&quot;, &lt;Dog as Animal&gt;::baby_name());
-}
-</code></pre>
-<p>我们为Rust提供了尖括号内的类型注释，完全限定语法格式如下</p>
-<pre><code>&lt;Type as Trait&gt;::function(receiver_if_method, next_arg, ...);
-</code></pre>
-<p>可以在调用函数或方法的任何地方使用完全限定语法。</p>
 ]]></content>
     </entry>
 </feed>
