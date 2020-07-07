@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-07T09:37:29.252Z</updated>
+    <updated>2020-07-07T09:40:18.263Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,89 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列20]]></title>
+        <id>https://jgl666.github.io/post/zzzz/</id>
+        <link href="https://jgl666.github.io/post/zzzz/">
+        </link>
+        <updated>2020-07-07T09:38:03.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/20">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<pre><code>fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
+}
+
+fn return2() {
+    if return { print!(&quot;2&quot;) } {
+    }
+}
+
+fn break1() {
+    loop {
+        if (break { print!(&quot;1&quot;) }) {
+        }
+    }
+}
+
+fn break2() {
+    loop {
+        if break { print!(&quot;2&quot;) } {
+        }
+    }
+}
+
+fn main() {
+    return1();
+    return2();
+    break1();
+    break2();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>参照<a href="https://doc.rust-lang.org/reference/expressions.html#expression-precedence">表达式优先级</a><br></p>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>return 总是优化处理后面的表达式</p>
+<pre><code>fn return1() {
+    if (return { print!(&quot;1&quot;) }) {
+    }
+}
+
+fn return2() {
+    if return { print!(&quot;2&quot;) } {
+    }
+}
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>() 优先级大于break，先计算括号表达式，输出1</p>
+<pre><code>fn break1() {
+    loop {
+        if (break { print!(&quot;1&quot;) }) {
+        }
+    }
+}
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<pre><code>fn break2() {
+    loop {
+        if break { print!(&quot;2&quot;) } {
+        }
+    }
+}
+</code></pre>
+<p>和return 不一样，break不优先处理后面的表达式，上面的函数格式化如下。break在 {println!(&quot;2&quot;)} 之前就退出了。</p>
+<pre><code>fn break2() {
+    loop {
+        if break
+        { print!(&quot;2&quot;) }
+        {}
+    }
+}
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[ quiz阅读笔记系列19]]></title>
         <id>https://jgl666.github.io/post/aaa/</id>
@@ -701,33 +784,6 @@ fn main() {
 <p>For instance, if the receiver has type Box&lt;[i32;2]&gt;, then the candidate types will be Box&lt;[i32;2]&gt;, &amp;Box&lt;[i32;2]&gt;, &amp;mut Box&lt;[i32;2]&gt;, [i32; 2] (by dereferencing), &amp;[i32; 2], &amp;mut [i32; 2], [i32] (by unsized coercion), &amp;[i32], and finally &amp;mut [i32].</p>
 </blockquote>
 <p>Rust在调用方法的时候，<mark>通过重复解除对接收方表达式的类型的引用，将遇到的每种类型添加到列表中来获取这些值。</mark> 然后，对于每个候选T，添加&amp;T和&amp;mut到紧接在T之后的列表中。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列13]]></title>
-        <id>https://jgl666.github.io/post/rustquiz13/</id>
-        <link href="https://jgl666.github.io/post/rustquiz13/">
-        </link>
-        <updated>2020-06-29T15:31:18.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/13">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>struct S;
-
-fn main() {
-    let [x, y] = &amp;mut [S, S];
-    let eq = x as *mut S == y as *mut S;
-    print!(&quot;{}&quot;, eq as u8);
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>NO.1</p>
-<hr>
-<p>S是零大小类型，编译器会进行优化。这里数组的地址和两个元素的地址一样。数组[S; 2]大小也是0。</p>
-<pre><code>let [x, y] = &amp;mut [S, S];
-</code></pre>
-<h2 id="rust相关知识">Rust相关知识</h2>
-<p><a href="https://doc.rust-lang.org/nomicon/exotic-sizes.html#zero-sized-types-zsts">ZSTS</a>类型：<br><br>
-Rust认为，任何生产或存储ZST的操作都可以被简化为无操作。存储它甚至没有意义——它不占任何空间。可以在编译时期优化代码，较少不必要的内存分配。</p>
 ]]></content>
     </entry>
 </feed>
