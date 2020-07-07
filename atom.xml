@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-07T09:43:49.653Z</updated>
+    <updated>2020-07-07T12:53:49.092Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,432 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列32]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-32/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-32/">
+        </link>
+        <updated>2020-07-07T12:53:07.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/32">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>fn check(x: i32) -&gt; bool {
+    print!(&quot;{}&quot;, x);
+    false
+}
+
+fn main() {
+    match (1, 2) {
+        (x, _) | (_, x) if check(x) =&gt; {
+            print!(&quot;3&quot;)
+        }
+        _ =&gt; print!(&quot;4&quot;),
+    }
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>参看<a href="https://doc.rust-lang.org/reference/expressions/match-expr.html#match-guards">match guard</a><br><br>
+上面这题的匹配过程：<br>
+Rust match 匹配到 <mark>(x , _)</mark> ，此时x = 1, 然后执行 if 判断，check(x) 输出 1 , 返回false , Rust 继续匹配，匹配到 <mark>( _ , x)</mark>， 此时x = 2，再次执行 if 判断语句，返回false。继续匹配下面一条，因为 _ 是通配符，所以输出4<br><br>
+流程如下图：</p>
+<br>
+<h2 id="拓展">拓展</h2>
+<p>改为true 输出1 3</p>
+<pre><code>fn check(x: i32) -&gt; bool {
+    print!(&quot;{}&quot;, x);
+    true
+}
+
+fn main() {
+    match (1, 2) {
+        (x, _) | (_, x) if check(x) =&gt; {
+            print!(&quot;3&quot;)
+        }
+        _ =&gt; print!(&quot;4&quot;),
+    }
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列31]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-31/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-31/">
+        </link>
+        <updated>2020-07-07T12:52:04.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="原文链接"><a href="https://dtolnay.github.io/rust-quiz/31">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br><br>
+<a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html#method-call-expressions">相关文档</a></h2>
+<pre><code>trait Or {
+    fn f(self);
+}
+
+struct T;
+
+impl Or for &amp;T {
+    fn f(self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+impl Or for &amp;&amp;&amp;&amp;T {
+    fn f(self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+fn main() {
+    let t = T;
+    let wt = &amp;T;
+    let wwt = &amp;&amp;T;
+    let wwwt = &amp;&amp;&amp;T;
+    let wwwwt = &amp;&amp;&amp;&amp;T;
+    let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
+    t.f();
+    wt.f();
+    wwt.f();
+    wwwt.f();
+    wwwwt.f();
+    wwwwwt.f();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>尝试寻找T对应的f方法，没有找到，然后给T加上&amp;，找到对应的方法</p>
+<pre><code>let t = T;
+t.f();
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>直接找到对应的类型&amp;T</p>
+<pre><code>let wt = &amp;T;
+wt.f();
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;T,没找到,加上&amp;,还是没有，然后解引用，找到&amp;T</p>
+<pre><code>let wwt = &amp;&amp;T;
+wwt.f();
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,找到 &amp;&amp;&amp;&amp;T</p>
+<pre><code>let wwwt = &amp;&amp;&amp;T;
+wwwt.f();
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,没找到,解引用找到</p>
+<pre><code>let wwwwt = &amp;&amp;&amp;&amp;T;
+wwwwt.f();
+</code></pre>
+<h4 id="no6">NO.6</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;&amp;&amp;T,没找到,加上&amp;, 没找到,解引用找到</p>
+<pre><code>let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
+wwwwwt.f();
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列30]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-30/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-30/">
+        </link>
+        <updated>2020-07-07T11:04:35.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/30">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br></p>
+<hr>
+<pre><code>use std::rc::Rc;
+
+struct A;
+
+fn p&lt;X&gt;(x: X) {
+    match std::mem::size_of::&lt;X&gt;() {
+        0 =&gt; print!(&quot;0&quot;),
+        _ =&gt; print!(&quot;1&quot;),
+    }
+}
+
+fn main() {
+    let a = &amp;A;
+    p(a);
+    p(a.clone());
+    
+    let b = &amp;();
+    p(b);
+    p(b.clone());
+    
+    let c = Rc::new(());
+    p(Rc::clone(&amp;c));
+    p(c.clone());
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<h4 id="no1">NO.1</h4>
+<hr>
+<p>P(a) 是std::mem::size_of::&lt;&amp;A&gt;(),输出1。</p>
+<pre><code>    let a = &amp;A;
+    p(a);
+    p(a.clone());
+</code></pre>
+<p>clone的方法实现</p>
+<pre><code>fn clone(&amp;self) -&gt; Self {
+    *self
+}
+</code></pre>
+<p>没有为A实现clone方法，会自动给A加&amp;。Clone默认给&amp;T实现clone方法</p>
+<pre><code>impl&lt;T: ?Sized&gt; Clone for &amp;T {
+    #[inline]
+    fn clone(&amp;self) -&gt; Self {
+        *self
+    }
+}
+</code></pre>
+<p>如果实现A的clone方法，输出0</p>
+<pre><code>use std::clone::Clone;
+
+impl Clone for A{
+    fn clone(&amp;self)-&gt;Self{
+        A
+    }
+}
+
+</code></pre>
+<h4 id="no2">NO.2</h4>
+<hr>
+<p>b的类似是&amp;(),p(b) 执行std::mem::size_of::&lt;&amp;()&gt;()输出1，()有实现clone，所以b.clone 返回0</p>
+<pre><code>let b = &amp;();
+p(b);
+p(b.clone());
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>Rc::clone返回的是Rc<T>,是指针，占一个指针大小</p>
+<pre><code>let c = Rc::new(());
+p(Rc::clone(&amp;c));
+p(c.clone());
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列29]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-29/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-29/">
+        </link>
+        <updated>2020-07-07T11:03:48.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/29">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br></p>
+<hr>
+<pre><code>trait Trait {
+    fn p(&amp;self);
+}
+
+impl Trait for (u32) {
+    fn p(&amp;self) { print!(&quot;1&quot;); }
+}
+
+impl Trait for (i32,) {
+    fn p(&amp;self) { print!(&quot;2&quot;); }
+}
+
+impl Trait for (u32, u32) {
+    fn p(&amp;self) { print!(&quot;3&quot;); }
+}
+
+impl Trait for (i32, i32,) {
+    fn p(&amp;self) { print!(&quot;4&quot;); }
+}
+
+fn main() {
+    (0).p();
+    (0,).p();
+    (0, 0).p();
+    (0, 0,).p();
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>Rust中当元组中只有一个元素时，必须在这个元素的后面加上逗号表示</p>
+<pre><code>(0,)
+</code></pre>
+<p>否则，(0)就是一个分组表达式，返回括号中的计算结果即0</p>
+<pre><code>0
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列28]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-28/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-28/">
+        </link>
+        <updated>2020-07-07T11:03:08.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/28">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br></p>
+<pre><code>struct Guard;
+
+impl Drop for Guard {
+    fn drop(&amp;mut self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+fn main() {
+    let _guard = Guard;
+    print!(&quot;3&quot;);
+    let _ = Guard;
+    print!(&quot;2&quot;);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>这个是没有所有权的接收者，会立马drop</p>
+<pre><code>let _ = Guard;
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列27]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-27/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-27/">
+        </link>
+        <updated>2020-07-07T10:00:57.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/27">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>trait Base {
+    fn method(&amp;self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+trait Derived: Base {
+    fn method(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+struct BothTraits;
+impl Base for BothTraits {}
+impl Derived for BothTraits {}
+
+fn dynamic_dispatch(x: &amp;dyn Base) {
+    x.method();
+}
+
+fn static_dispatch&lt;T: Base&gt;(x: T) {
+    x.method();
+}
+
+fn main() {
+    dynamic_dispatch(&amp;BothTraits);
+    static_dispatch(BothTraits);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>Rust中没有继承的概念，只有组合的概念，这里不是继承，只有组合，意思时Derive和base的组合，实现Derived的前提时必须实现Base</p>
+<pre><code>trait Derived: Base {
+    fn method(&amp;self) {
+        print!(&quot;2&quot;);
+    }
+}
+</code></pre>
+<p>下面都指定了trait对象的类型Base，不管时动态还是静态，只会调用Base实现的方法</p>
+<pre><code>fn dynamic_dispatch(x: &amp;dyn Base) {
+    x.method();
+}
+
+fn static_dispatch&lt;T: Base&gt;(x: T) {
+    x.method();
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ quiz阅读笔记系列26]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-26/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-26/">
+        </link>
+        <updated>2020-07-07T10:00:30.000Z</updated>
+        <content type="html"><![CDATA[<pre><code>fn main() {
+    let input = vec![1, 2, 3];
+
+    let parity = input
+        .iter()
+        .map(|x| {
+            print!(&quot;{}&quot;, x);
+            x % 2
+        });
+
+    for p in parity {
+        print!(&quot;{}&quot;, p);
+    }
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>Map结构体</p>
+<pre><code>pub struct Map&lt;I, F&gt; {
+    iter: I,
+    f: F,
+}
+</code></pre>
+<p>Map的方法next</p>
+<pre><code>#[inline]
+fn next(&amp;mut self) -&gt; Option&lt;B&gt; {
+    self.iter.next().map(&amp;mut self.f)
+}
+
+</code></pre>
+<p>可见，迭代调用的是包裹的内部迭代器，这里是数组的next方法，map传递的是Map初始化的函数 &amp;mut self.f 。即：</p>
+<pre><code>|x| {
+    print!(&quot;{}&quot;, x);
+    x % 2
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[quiz阅读笔记系列25]]></title>
+        <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-25/</id>
+        <link href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-25/">
+        </link>
+        <updated>2020-07-07T09:44:25.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/25">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
+<hr>
+<pre><code>use std::fmt::{self, Display};
+
+struct S;
+
+impl Display for S {
+    fn fmt(&amp;self, formatter: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        formatter.write_str(&quot;1&quot;)
+    }
+}
+
+impl Drop for S {
+    fn drop(&amp;mut self) {
+        print!(&quot;2&quot;);
+    }
+}
+
+fn f() -&gt; S {
+    S
+}
+
+fn main() {
+    let S = f();
+    print!(&quot;{}&quot;, S);
+}
+</code></pre>
+<h2 id="解析">解析</h2>
+<p>这里不是赋值，是结构体解构，函数的内部的变量没有发生所有权转移，直接drop掉。</p>
+<pre><code> let S = f();
+</code></pre>
+<p>S打印完也Drop了</p>
+<pre><code>print!(&quot;{}&quot;, S);
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[ quiz阅读笔记系列24]]></title>
         <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-24/</id>
@@ -225,588 +651,6 @@ fn main() {
     &amp;S.f();
     &amp;S.g();
 }
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列22]]></title>
-        <id>https://jgl666.github.io/post/aaaaaaa/</id>
-        <link href="https://jgl666.github.io/post/aaaaaaa/">
-        </link>
-        <updated>2020-07-07T09:41:13.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/22">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<hr>
-<pre><code>macro_rules! m {
-    ($a:tt) =&gt; { print!(&quot;1&quot;) };
-    ($a:tt $b:tt) =&gt; { print!(&quot;2&quot;) };
-    ($a:tt $b:tt $c:tt) =&gt; { print!(&quot;3&quot;) };
-    ($a:tt $b:tt $c:tt $d:tt) =&gt; { print!(&quot;4&quot;) };
-    ($a:tt $b:tt $c:tt $d:tt $e:tt) =&gt; { print!(&quot;5&quot;) };
-    ($a:tt $b:tt $c:tt $d:tt $e:tt $f:tt) =&gt; { print!(&quot;6&quot;) };
-    ($a:tt $b:tt $c:tt $d:tt $e:tt $f:tt $g:tt) =&gt; { print!(&quot;7&quot;) };
-}
-
-fn main() {
-    m!(-1);
-    m!(-1.);
-    m!(-1.0);
-    m!(-1.0e1);
-    m!(-1.0e-1);
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>Rust中将-理解为单独的符号，小数点以及后面的e都是一个符号。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列21]]></title>
-        <id>https://jgl666.github.io/post/ccc/</id>
-        <link href="https://jgl666.github.io/post/ccc/">
-        </link>
-        <updated>2020-07-07T09:40:44.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/21">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<hr>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-}
-
-impl&lt;F: FnOnce() -&gt; bool&gt; Trait for F {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl Trait for () {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    let x = || { (return) || true; };
-    x().f();
-
-    let x = loop { (break) || true; };
-    x.f();
-
-    let x = || { return (|| true); };
-    x().f();
-
-    let x = loop { break (|| true); };
-    x.f();
-
-    let x = || { return || true; };
-    x().f();
-
-    let x = loop { break || true; };
-    x.f();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>这个闭包返回(),因为(return) || true;return 是never类型, 即！可以转换为任何类型，这里会转为bool。最后， 这是一个表达式语句，外面是块表达式，最后返回（）</p>
-<pre><code>let x = || { (return) || true; };
-x().f();
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>这里break 跳出循环，隐式返回（）</p>
-<pre><code>let x = loop { (break) || true; };
-x.f();
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<p>return 返回闭包</p>
-<pre><code>let x = || { return (|| true); };
-x().f();
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<p>括号的优先级大于break，执行括号表达式，break 返回闭包</p>
-<pre><code>let x = loop { break (|| true); };
-x.f();
-
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<p>返回闭包</p>
-<pre><code>let x = || { return || true; };
-x().f();
-</code></pre>
-<h4 id="no6">NO.6</h4>
-<p>返回闭包</p>
-<pre><code>let x = loop { break || true; };
-x.f();
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列20]]></title>
-        <id>https://jgl666.github.io/post/zzzz/</id>
-        <link href="https://jgl666.github.io/post/zzzz/">
-        </link>
-        <updated>2020-07-07T09:38:03.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/20">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>fn return1() {
-    if (return { print!(&quot;1&quot;) }) {
-    }
-}
-
-fn return2() {
-    if return { print!(&quot;2&quot;) } {
-    }
-}
-
-fn break1() {
-    loop {
-        if (break { print!(&quot;1&quot;) }) {
-        }
-    }
-}
-
-fn break2() {
-    loop {
-        if break { print!(&quot;2&quot;) } {
-        }
-    }
-}
-
-fn main() {
-    return1();
-    return2();
-    break1();
-    break2();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>参照<a href="https://doc.rust-lang.org/reference/expressions.html#expression-precedence">表达式优先级</a><br></p>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>return 总是优化处理后面的表达式</p>
-<pre><code>fn return1() {
-    if (return { print!(&quot;1&quot;) }) {
-    }
-}
-
-fn return2() {
-    if return { print!(&quot;2&quot;) } {
-    }
-}
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>() 优先级大于break，先计算括号表达式，输出1</p>
-<pre><code>fn break1() {
-    loop {
-        if (break { print!(&quot;1&quot;) }) {
-        }
-    }
-}
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<pre><code>fn break2() {
-    loop {
-        if break { print!(&quot;2&quot;) } {
-        }
-    }
-}
-</code></pre>
-<p>和return 不一样，break不优先处理后面的表达式，上面的函数格式化如下。break在 {println!(&quot;2&quot;)} 之前就退出了。</p>
-<pre><code>fn break2() {
-    loop {
-        if break
-        { print!(&quot;2&quot;) }
-        {}
-    }
-}
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列19]]></title>
-        <id>https://jgl666.github.io/post/aaa/</id>
-        <link href="https://jgl666.github.io/post/aaa/">
-        </link>
-        <updated>2020-07-07T09:36:54.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/19">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>struct S;
-
-impl Drop for S {
-    fn drop(&amp;mut self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-fn main() {
-    let s = S;
-    let _ = s;
-    print!(&quot;2&quot;);
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<p>所有权发生转移</p>
-<pre><code>let s = S;
-</code></pre>
-<p>所有权没有接收者，s会一直存在直到作用域结束</p>
-<pre><code> let _ = s;
-</code></pre>
-<h4 id="拓展">拓展</h4>
-<p>输出112，因为所有权没有接收者，直接drop了</p>
-<pre><code>struct S;
-
-impl Drop for S {
-    fn drop(&amp;mut self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-fn get()-&gt;S{
-    S
-}
-
-fn main() {
-    let _ = get();
-    let _ = S;
-    print!(&quot;2&quot;);
-}
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列18]]></title>
-        <id>https://jgl666.github.io/post/sss/</id>
-        <link href="https://jgl666.github.io/post/sss/">
-        </link>
-        <updated>2020-07-07T09:30:22.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/18">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<pre><code>struct S {
-    f: fn(),
-}
-
-impl S {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-fn main() {
-    let print2 = || print!(&quot;2&quot;);
-    S { f: print2 }.f();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>访问内部方法</p>
-<pre><code>S { f: print2 }.f();
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>加括号显式调用闭包</p>
-<pre><code> (S { f: print2 }).f();
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列16和17]]></title>
-        <id>https://jgl666.github.io/post/sssss/</id>
-        <link href="https://jgl666.github.io/post/sssss/">
-        </link>
-        <updated>2020-07-07T09:12:45.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/16">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<h2 id="16">16</h2>
-<pre><code>fn main() {
-    let mut x = 4;
-    --x;
-    print!(&quot;{}{}&quot;, --x, --x);
-}
-</code></pre>
-<p>相当于</p>
-<pre><code>print!(&quot;{}{}&quot;, -(-x), -(-x));
-</code></pre>
-<h2 id="17">17</h2>
-<p>Rust中没有--</p>
-<pre><code>fn main() {
-    let mut a = 5;
-    let mut b = 3;
-    print!(&quot;{}&quot;, a-- - --b);
-}
-</code></pre>
-<p>上面相当于</p>
-<pre><code>    let mut a = 5;
-    let mut b = 3;
-    print!(&quot;{}&quot;, a-(-(-(-(-b)))));
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ quiz阅读笔记系列23]]></title>
-        <id>https://jgl666.github.io/post/ssss/</id>
-        <link href="https://jgl666.github.io/post/ssss/">
-        </link>
-        <updated>2020-07-07T09:11:41.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/23">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<hr>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-    fn g(&amp;self);
-}
-
-struct S;
-
-impl S {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-
-    fn g(&amp;mut self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl Trait for S {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-
-    fn g(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    S.f();
-    S.g();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>如果结构体方法和trait中方法重名，默认调用结构体自身的方法。可以使用消除歧义的语法调用trait中的方法。</p>
-<pre><code>&lt;S as Trait&gt;::f(&amp;S);
-</code></pre>
-<p>NO.2</p>
-<hr>
-<p>S找不到方法，会添加引用，找到Trait中定义的方法</p>
-<pre><code>fn g(&amp;self) {
-    print!(&quot;2&quot;);
-}
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p>如果还是找不到就加上&amp;mut<br>
-这里注释掉，输出11</p>
-<pre><code>impl Trait for S {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-
-    fn g(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>增加新的Trait1，输出33，因为直接匹配到方法中接受类型就是S</p>
-<pre><code>trait Trait1{
-    fn f(self);
-    fn g(self);
-}
-
-impl Trait1 for S {
-    fn f(self) {
-        print!(&quot;3&quot;);
-    }
-
-    fn g(self) {
-        print!(&quot;3&quot;);
-    }
-}
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<hr>
-<p>这样也可以，输出1，3</p>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-    fn g(&amp;self);
-}
-
-struct S;
-
-impl S {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-
-    fn g(&amp;mut self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-// impl Trait for S {
-//     fn f(&amp;self) {
-//         print!(&quot;2&quot;);
-//     }
-//
-//     fn g(&amp;self) {
-//         print!(&quot;2&quot;);
-//     }
-// }
-
-trait Trait1{
-    fn f(self);
-    fn g(self);
-}
-
-impl Trait1 for &amp;S {
-    fn f(self) {
-        print!(&quot;3&quot;);
-    }
-
-    fn g(self) {
-        print!(&quot;3&quot;);
-    }
-}
-fn main() {
-    S.f();
-    S.g();
-}
-</code></pre>
-<h4 id="no5-2">NO.5</h4>
-<hr>
-<p>这里输出33，没找到先解引用</p>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-    fn g(&amp;self);
-}
-
-struct S;
-
-// impl S {
-//     fn f(&amp;self) {
-//         print!(&quot;1&quot;);
-//     }
-//
-//     fn g(&amp;mut self) {
-//         print!(&quot;1&quot;);
-//     }
-// }
-
-impl Trait for S {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-
-    fn g(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-trait Trait1{
-    fn f(self);
-    fn g(self);
-}
-
-impl Trait1 for S {
-    fn f(self) {
-        print!(&quot;3&quot;);
-    }
-
-    fn g(self) {
-        print!(&quot;3&quot;);
-    }
-}
-fn main() {
-    &amp;S.f();
-    &amp;S.g();
-}
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列31]]></title>
-        <id>https://jgl666.github.io/post/xxafaba/</id>
-        <link href="https://jgl666.github.io/post/xxafaba/">
-        </link>
-        <updated>2020-07-04T07:21:05.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="原文链接"><a href="https://dtolnay.github.io/rust-quiz/31">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br><br>
-<a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html#method-call-expressions">相关文档</a></h2>
-<pre><code>trait Or {
-    fn f(self);
-}
-
-struct T;
-
-impl Or for &amp;T {
-    fn f(self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl Or for &amp;&amp;&amp;&amp;T {
-    fn f(self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    let t = T;
-    let wt = &amp;T;
-    let wwt = &amp;&amp;T;
-    let wwwt = &amp;&amp;&amp;T;
-    let wwwwt = &amp;&amp;&amp;&amp;T;
-    let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
-    t.f();
-    wt.f();
-    wwt.f();
-    wwwt.f();
-    wwwwt.f();
-    wwwwwt.f();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>尝试寻找T对应的f方法，没有找到，然后给T加上&amp;，找到对应的方法</p>
-<pre><code>let t = T;
-t.f();
-</code></pre>
-<h4 id="no2">NO.2</h4>
-<hr>
-<p>直接找到对应的类型&amp;T</p>
-<pre><code>let wt = &amp;T;
-wt.f();
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;T,没找到,加上&amp;,还是没有，然后解引用，找到&amp;T</p>
-<pre><code>let wwt = &amp;&amp;T;
-wwt.f();
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,找到 &amp;&amp;&amp;&amp;T</p>
-<pre><code>let wwwt = &amp;&amp;&amp;T;
-wwwt.f();
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,没找到,解引用找到</p>
-<pre><code>let wwwwt = &amp;&amp;&amp;&amp;T;
-wwwwt.f();
-</code></pre>
-<h4 id="no6">NO.6</h4>
-<hr>
-<p>找到对应的类型&amp;&amp;&amp;&amp;&amp;T,没找到,加上&amp;, 没找到,解引用找到</p>
-<pre><code>let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
-wwwwwt.f();
 </code></pre>
 ]]></content>
     </entry>

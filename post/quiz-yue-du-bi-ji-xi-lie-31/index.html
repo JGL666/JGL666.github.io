@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>quiz阅读笔记系列6 | JGL</title>
+<title>quiz阅读笔记系列31 | JGL</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -19,13 +19,17 @@
 
 
     <meta name="description" content="原文链接
-参考
-use std::mem;
+Rust Quiz 解读汇总
+相关文档
+trait Or {
+    fn f(self);
+}
 
-fn main() {
-    let a;
-    let a = a = true;
-    print!(&quot;{}&quot;, mem::size_of_val(&amp;a))..." />
+struct T;
+
+impl Or for &amp;T {
+    fn f(self) {
+        print!(&..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -97,41 +101,92 @@ fn main() {
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">quiz阅读笔记系列6</h2>
-            <div class="post-date">2020-06-26</div>
+            <h2 class="post-title">quiz阅读笔记系列31</h2>
+            <div class="post-date">2020-07-07</div>
             
             <div class="post-content" v-pre>
-              <p><a href="https://note.youdao.com/">原文链接</a><br>
-<a href="https://zhuanlan.zhihu.com/p/101354383">参考</a></p>
-<pre><code>use std::mem;
+              <h2 id="原文链接"><a href="https://dtolnay.github.io/rust-quiz/31">原文链接</a><br><br>
+<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a><br><br>
+<a href="https://doc.rust-lang.org/reference/expressions/method-call-expr.html#method-call-expressions">相关文档</a></h2>
+<pre><code>trait Or {
+    fn f(self);
+}
+
+struct T;
+
+impl Or for &amp;T {
+    fn f(self) {
+        print!(&quot;1&quot;);
+    }
+}
+
+impl Or for &amp;&amp;&amp;&amp;T {
+    fn f(self) {
+        print!(&quot;2&quot;);
+    }
+}
 
 fn main() {
-    let a;
-    let a = a = true;
-    print!(&quot;{}&quot;, mem::size_of_val(&amp;a));
+    let t = T;
+    let wt = &amp;T;
+    let wwt = &amp;&amp;T;
+    let wwwt = &amp;&amp;&amp;T;
+    let wwwwt = &amp;&amp;&amp;&amp;T;
+    let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
+    t.f();
+    wt.f();
+    wwt.f();
+    wwwt.f();
+    wwwwt.f();
+    wwwwwt.f();
 }
 </code></pre>
 <h2 id="解析">解析</h2>
 <h4 id="no1">NO.1</h4>
 <hr>
-<pre><code>//返回指向的值的大小(以字节为单位)
-size_of_val
+<p>尝试寻找T对应的f方法，没有找到，然后给T加上&amp;，找到对应的方法</p>
+<pre><code>let t = T;
+t.f();
 </code></pre>
-<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1593160874878.png" alt="" loading="lazy"></figure>
 <h4 id="no2">NO.2</h4>
 <hr>
-<p>赋值表达式<br>
-<img src="https://jgl666.github.io/post-images/1593160883752.png" alt="" loading="lazy"><br>
-赋值表达式由位置表达式、等号(=)和值表达式组成。这样的表达式总是具有unit类型。</p>
+<p>直接找到对应的类型&amp;T</p>
+<pre><code>let wt = &amp;T;
+wt.f();
+</code></pre>
+<h4 id="no3">NO.3</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;T,没找到,加上&amp;,还是没有，然后解引用，找到&amp;T</p>
+<pre><code>let wwt = &amp;&amp;T;
+wwt.f();
+</code></pre>
+<h4 id="no4">NO.4</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,找到 &amp;&amp;&amp;&amp;T</p>
+<pre><code>let wwwt = &amp;&amp;&amp;T;
+wwwt.f();
+</code></pre>
+<h4 id="no5">NO.5</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;T,没找到,加上&amp;,没找到,解引用找到</p>
+<pre><code>let wwwwt = &amp;&amp;&amp;&amp;T;
+wwwwt.f();
+</code></pre>
+<h4 id="no6">NO.6</h4>
+<hr>
+<p>找到对应的类型&amp;&amp;&amp;&amp;&amp;T,没找到,加上&amp;, 没找到,解引用找到</p>
+<pre><code>let wwwwwt = &amp;&amp;&amp;&amp;&amp;T;
+wwwwwt.f();
+</code></pre>
 
             </div>
             
             
               <div class="next-post">
                 <div class="next">下一篇</div>
-                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-4/">
+                <a href="https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-30/">
                   <h3 class="post-title">
-                     quiz阅读笔记系列4
+                    quiz阅读笔记系列30
                   </h3>
                 </a>
               </div>
