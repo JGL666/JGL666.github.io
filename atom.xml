@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://jgl666.github.io</id>
     <title>JGL</title>
-    <updated>2020-07-07T12:53:49.092Z</updated>
+    <updated>2020-07-15T17:10:38.493Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://jgl666.github.io"/>
     <link rel="self" href="https://jgl666.github.io/atom.xml"/>
@@ -10,6 +10,105 @@
     <logo>https://jgl666.github.io/images/avatar.png</logo>
     <icon>https://jgl666.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, JGL</rights>
+    <entry>
+        <title type="html"><![CDATA[exa源码阅读笔记1]]></title>
+        <id>https://jgl666.github.io/post/exa-yuan-ma-yue-du-bi-ji-1/</id>
+        <link href="https://jgl666.github.io/post/exa-yuan-ma-yue-du-bi-ji-1/">
+        </link>
+        <updated>2020-07-15T17:02:29.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="简介">简介</h2>
+<p>exa是Rust编写的具备ls工具功能的工具</p>
+<h2 id="功能">功能</h2>
+<h4 id="不带任何参数ls和exa对比如下">不带任何参数ls和exa对比如下</h4>
+<hr>
+<pre><code>ls
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://jgl666.github.io/post-images/1594832764892.PNG" alt="" loading="lazy"></figure>
+<pre><code>exa
+</code></pre>
+<figure data-type="image" tabindex="2"><img src="https://jgl666.github.io/post-images/1594832778565.PNG" alt="" loading="lazy"></figure>
+<p>可以看出exa颜色更加丰富，会根据文件类型显示不同的颜色，如图片、音视频、压缩文件等等，像编译的脚本如Makefile也会高亮。相比之下，ls对于文件类型没有区分那么细致。</p>
+<h4 id="exa集成了tree的功能">exa集成了tree的功能</h4>
+<p>exa 可以像tree一样列出目录结构</p>
+<pre><code>exa -T xx
+</code></pre>
+<figure data-type="image" tabindex="3"><img src="https://jgl666.github.io/post-images/1594832800642.PNG" alt="" loading="lazy"></figure>
+<h4 id="exa文件详细信息列举">exa文件详细信息列举</h4>
+<pre><code>exa -l
+</code></pre>
+<p>exa -l<br>
+<img src="https://jgl666.github.io/post-images/1594832810438.PNG" alt="" loading="lazy"></p>
+<pre><code>ls -l
+</code></pre>
+<figure data-type="image" tabindex="4"><img src="https://jgl666.github.io/post-images/1594832825157.PNG" alt="" loading="lazy"></figure>
+<p>对比可以看出exa 列出文件详细信息，文件元数据信息都是有颜色高亮的。</p>
+<h4 id="列出隐藏文件即开头的文件">列出隐藏文件即.开头的文件</h4>
+<p>对比ls 和 exa：ls -a 可以列出所有.开头的文件，包含 . 和 .. 目录。exa -a 仅能列出 . 开头的文件，不包含 . 和 .. 目录，exa -aa 列出包含 . 和 .. 目录的文件。</p>
+<h4 id="其它功能">其它功能</h4>
+<h5 id="列出文件详细信息带header">列出文件详细信息带header</h5>
+<pre><code>exa -lh
+</code></pre>
+<figure data-type="image" tabindex="5"><img src="https://jgl666.github.io/post-images/1594832748814.PNG" alt="" loading="lazy"></figure>
+<h5 id="tree形式列出文件详细信息以及带header">tree形式列出文件详细信息以及带header</h5>
+<pre><code>exa -lhT xx
+</code></pre>
+<figure data-type="image" tabindex="6"><img src="https://jgl666.github.io/post-images/1594832735036.PNG" alt="" loading="lazy"></figure>
+<h5 id="列出文件的inode号">列出文件的inode号</h5>
+<pre><code>exa -lih
+</code></pre>
+<figure data-type="image" tabindex="7"><img src="https://jgl666.github.io/post-images/1594832718078.PNG" alt="" loading="lazy"></figure>
+<h5 id="更详细的功能可以通过-help-命令获取">更详细的功能可以通过 --help 命令获取</h5>
+<h2 id="代码结构">代码结构</h2>
+<h4 id="目录结构">目录结构</h4>
+<figure data-type="image" tabindex="8"><img src="https://jgl666.github.io/post-images/1594832690024.PNG" alt="" loading="lazy"></figure>
+<h5 id="bin目录">bin目录</h5>
+<hr>
+<p>main函数入口，可执行文件exa主函数</p>
+<h5 id="fs">fs</h5>
+<hr>
+<p><img src="https://jgl666.github.io/post-images/1594832658270.PNG" alt="" loading="lazy"><br>
+<br>模块功能如下</p>
+<ul>
+<li>dir ： 对目录的读取，对隐藏目录的过滤</li>
+<li>dir_action : 目录的操作，有三个动作：目录当作正常文件显示、目录以递归的方式显示、目录以树状格式显示</li>
+<li>fields ： 对文件元数据信息的封装</li>
+<li>file : 文件元数据信息的获取，即大小、权限、时间戳等等</li>
+<li>filter ： 提供文件过滤以及排序功能</li>
+<li>feature : 包含git相关功能项</li>
+</ul>
+<h5 id="info">info</h5>
+<hr>
+<p><img src="https://jgl666.github.io/post-images/1594832641219.PNG" alt="" loading="lazy"><br>
+<br>列举了内置的文件类型列表，包含图像、音视频、编译脚本、压缩文件、doc、excel等等。为外部模块提供查询文件是否是特殊文件，从而外部根据文件类别做特殊的操作。</p>
+<h5 id="options">options</h5>
+<hr>
+<p><img src="https://jgl666.github.io/post-images/1594832626875.PNG" alt="" loading="lazy"><br>
+<br></p>
+<ul>
+<li>dir_action : 根据命令行参数，推断目录的操作类型</li>
+<li>filter : 根据命令行参数包含sort 参数， 决定文件按照什么排序方式列举。</li>
+<li>flags : 所有命令行参数的列举</li>
+<li>help : 处理--help 命令行参数的输出</li>
+<li>misfires : 失败一些处理</li>
+<li>parser : 命令行参数的解析</li>
+<li>style : 根据命令行参数推导文件名如何显示，如 -F 表示遇到特殊文件增加字符区分文件类型。</li>
+<li>vars ： 环境变量的获取以及匹配</li>
+<li>version : 版本号的获取</li>
+<li>view ： 输出结果如何显示：网格、一行、一列、树状等等</li>
+</ul>
+<h5 id="output">output</h5>
+<p><img src="https://jgl666.github.io/post-images/1594832607252.PNG" alt="" loading="lazy"><br>
+<br></p>
+<ul>
+<li>render 文件夹里面定义了文件元数据每项的如何显示</li>
+<li>外部文件如table、line、grid 等等，定义整个输出样式</li>
+</ul>
+<h5 id="style">style</h5>
+<p>列举样式列表，可供外部直接调用。类似css文件定义的样式，外部要使用，直接调用即可</p>
+<h2 id="整个exa框架图">整个exa框架图</h2>
+<figure data-type="image" tabindex="9"><img src="https://jgl666.github.io/post-images/1594832591665.PNG" alt="" loading="lazy"></figure>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[quiz阅读笔记系列32]]></title>
         <id>https://jgl666.github.io/post/quiz-yue-du-bi-ji-xi-lie-32/</id>
@@ -466,192 +565,6 @@ fn main() {
 <h2 id="解析">解析</h2>
 <p>Rust宏是部分卫生的，参看<a href="https://danielkeep.github.io/tlborm/book/mbe-min-hygiene.html">卫生宏</a><br><br>
 本题中宏中x先被替换为1，后面括号内的x不会影响宏中的x。const 在Rust中一个Item，不是本地变量，在出现K的地方会被替换为对应的值。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[quiz阅读笔记系列23]]></title>
-        <id>https://jgl666.github.io/post/jjjj/</id>
-        <link href="https://jgl666.github.io/post/jjjj/">
-        </link>
-        <updated>2020-07-07T09:41:49.000Z</updated>
-        <content type="html"><![CDATA[<p><a href="https://dtolnay.github.io/rust-quiz/23">原文链接</a><br><br>
-<a href="https://zhuanlan.zhihu.com/p/52098828">Rust Quiz 解读汇总</a></p>
-<hr>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-    fn g(&amp;self);
-}
-
-struct S;
-
-impl S {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-
-    fn g(&amp;mut self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-impl Trait for S {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-
-    fn g(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-fn main() {
-    S.f();
-    S.g();
-}
-</code></pre>
-<h2 id="解析">解析</h2>
-<h4 id="no1">NO.1</h4>
-<hr>
-<p>如果结构体方法和trait中方法重名，默认调用结构体自身的方法。可以使用消除歧义的语法调用trait中的方法。</p>
-<pre><code>&lt;S as Trait&gt;::f(&amp;S);
-</code></pre>
-<p>NO.2</p>
-<hr>
-<p>S找不到方法，会添加引用，找到Trait中定义的方法</p>
-<pre><code>fn g(&amp;self) {
-    print!(&quot;2&quot;);
-}
-</code></pre>
-<h4 id="no3">NO.3</h4>
-<hr>
-<p>如果还是找不到就加上&amp;mut<br>
-这里注释掉，输出11</p>
-<pre><code>impl Trait for S {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-
-    fn g(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-</code></pre>
-<h4 id="no4">NO.4</h4>
-<hr>
-<p>增加新的Trait1，输出33，因为直接匹配到方法中接受类型就是S</p>
-<pre><code>trait Trait1{
-    fn f(self);
-    fn g(self);
-}
-
-impl Trait1 for S {
-    fn f(self) {
-        print!(&quot;3&quot;);
-    }
-
-    fn g(self) {
-        print!(&quot;3&quot;);
-    }
-}
-</code></pre>
-<h4 id="no5">NO.5</h4>
-<hr>
-<p>这样也可以，输出1，3</p>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-    fn g(&amp;self);
-}
-
-struct S;
-
-impl S {
-    fn f(&amp;self) {
-        print!(&quot;1&quot;);
-    }
-
-    fn g(&amp;mut self) {
-        print!(&quot;1&quot;);
-    }
-}
-
-// impl Trait for S {
-//     fn f(&amp;self) {
-//         print!(&quot;2&quot;);
-//     }
-//
-//     fn g(&amp;self) {
-//         print!(&quot;2&quot;);
-//     }
-// }
-
-trait Trait1{
-    fn f(self);
-    fn g(self);
-}
-
-impl Trait1 for &amp;S {
-    fn f(self) {
-        print!(&quot;3&quot;);
-    }
-
-    fn g(self) {
-        print!(&quot;3&quot;);
-    }
-}
-fn main() {
-    S.f();
-    S.g();
-}
-</code></pre>
-<h4 id="no5-2">NO.5</h4>
-<hr>
-<p>这里输出33，没找到先解引用</p>
-<pre><code>trait Trait {
-    fn f(&amp;self);
-    fn g(&amp;self);
-}
-
-struct S;
-
-// impl S {
-//     fn f(&amp;self) {
-//         print!(&quot;1&quot;);
-//     }
-//
-//     fn g(&amp;mut self) {
-//         print!(&quot;1&quot;);
-//     }
-// }
-
-impl Trait for S {
-    fn f(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-
-    fn g(&amp;self) {
-        print!(&quot;2&quot;);
-    }
-}
-
-trait Trait1{
-    fn f(self);
-    fn g(self);
-}
-
-impl Trait1 for S {
-    fn f(self) {
-        print!(&quot;3&quot;);
-    }
-
-    fn g(self) {
-        print!(&quot;3&quot;);
-    }
-}
-fn main() {
-    &amp;S.f();
-    &amp;S.g();
-}
-</code></pre>
 ]]></content>
     </entry>
 </feed>
